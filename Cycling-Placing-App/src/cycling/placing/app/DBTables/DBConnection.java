@@ -1,4 +1,4 @@
-package cycling.placing.app;
+package cycling.placing.app.DBTables;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
