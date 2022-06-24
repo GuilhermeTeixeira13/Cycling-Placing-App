@@ -1,7 +1,11 @@
 package cycling.placing.app;
 
+import cycling.placing.app.DBTables.DBConnection;
 import java.io.IOException;
 import java.net.URL;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.Statement;
 import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -28,10 +32,13 @@ public class RegisterController implements Initializable {
     TextField txtFieldUsername;
 
     @FXML
-    PasswordField passFieldPassword;
+    PasswordField passFieldPasswordRegister;
     
     @FXML
-    PasswordField passFieldPasswordRepeat;
+    PasswordField passFieldPasswordRepeatRegister;
+    
+    @FXML
+    TextField txtFieldEmail;
     
     @FXML
     ImageView AppLogo;
@@ -58,7 +65,7 @@ public class RegisterController implements Initializable {
     Hyperlink criarConta;
     
     @FXML
-    Hyperlink esqueceuPass;
+    Label RegisterConfirmationLabel;
     
     @FXML
     private BorderPane sceneBorderPane;
@@ -75,9 +82,54 @@ public class RegisterController implements Initializable {
 
     }
     
-    public void userRegister(ActionEvent event) throws IOException {
-    
+    public void RegistrationButtonAction(ActionEvent event) throws IOException {
+        DBConnection connectNow = new DBConnection();
+        Connection connectDB = connectNow.getConnection();
+        
+        String verifyRegister = "SELECT count(1) FROM utilizadores WHERE username = '"+ txtFieldUsername.getText()+"'";
+        
+        try{
+            Statement statement = connectDB.createStatement();
+            ResultSet queryResult = statement.executeQuery(verifyRegister);
+            
+            while(queryResult.next()){
+                // Verify if another user with the same name already exists
+                if(queryResult.getInt(1) == 0 && passFieldPasswordRegister.getText().equals(passFieldPasswordRepeatRegister.getText())){
+                    saveUser();
+                }
+                else{
+                    RegisterConfirmationLabel.setText("Já existe um utilizador com esse nome.");
+                }
+            }
+        }catch(Exception e){
+            e.printStackTrace();
+            e.getCause();
+        }
     }
+    
+    public void saveUser(){
+        DBConnection connectNow = new DBConnection();
+        Connection connectDB = connectNow.getConnection();
+        
+        String username = txtFieldUsername.getText();
+        String email = txtFieldEmail.getText();
+        String pw = passFieldPasswordRegister.getText();
+        
+        String insertFields = "INSERT INTO utilizadores(username, email, password) VALUES ('";
+        String insertValues = username + "','" + email + "','" + pw + "')";
+        String insertToRegisters = insertFields + insertValues;
+        
+        try{
+            Statement statement = connectDB.createStatement();
+            statement.executeUpdate(insertToRegisters);
+            
+            RegisterConfirmationLabel.setText("Registado com sucesso!");
+        }catch(Exception e){
+            e.printStackTrace();
+            e.getCause();
+        }
+    }
+    
 
     public void goToLogin(ActionEvent event) throws IOException{
         FXMLLoader loader = new FXMLLoader(getClass().getResource("Login.fxml"));

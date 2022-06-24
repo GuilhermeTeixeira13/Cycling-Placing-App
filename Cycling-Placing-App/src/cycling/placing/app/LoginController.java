@@ -62,9 +62,6 @@ public class LoginController implements Initializable {
     Label LoginResult;
     
     @FXML
-    Button btnLogin;
-    
-    @FXML
     private BorderPane sceneBorderPane;
     
     private Stage stage;
