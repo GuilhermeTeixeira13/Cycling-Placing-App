@@ -26,6 +26,7 @@ import javafx.stage.Stage;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import org.mindrot.jbcrypt.BCrypt;
 
 public class LoginController implements Initializable {   
     @FXML
@@ -135,20 +136,32 @@ public class LoginController implements Initializable {
         DBConnection connectNow = new DBConnection();
         Connection connectDB = connectNow.getConnection();
         
-        String verifylogin = "SELECT count(1) FROM utilizadores WHERE username = '"+ txtFieldUsername.getText() + "' AND password='"+ passFieldPassword.getText() + "'";
+        String verifylogin = "SELECT count(1) FROM utilizadores WHERE username = '"+ txtFieldUsername.getText()+ "'";
+        String pwHashQuery = "SELECT password FROM utilizadores WHERE username = '"+ txtFieldUsername.getText()+ "'";
         
         try{
             Statement statement = connectDB.createStatement();
-            ResultSet queryResult = statement.executeQuery(verifylogin);
             
+            ResultSet pwHashResult = statement.executeQuery(pwHashQuery);
+            Boolean samePw = false;
+            while(pwHashResult.next()){
+                samePw = BCrypt.checkpw(passFieldPassword.getText(), pwHashResult.getString("password"));
+            }
+            pwHashResult.close();
+
+            
+            ResultSet queryResult = statement.executeQuery(verifylogin);
             while(queryResult.next()){
-                if(queryResult.getInt(1) == 1){
+                if(queryResult.getInt(1) == 1 && samePw == true){
                     LoginResult.setText("Sucesso!");
                 }
                 else{
                     LoginResult.setText("Login inválido. Tente outra vez.");
                 }
             }
+            queryResult.close();
+            
+            
         }catch(Exception e){
             e.printStackTrace();
             e.getCause();

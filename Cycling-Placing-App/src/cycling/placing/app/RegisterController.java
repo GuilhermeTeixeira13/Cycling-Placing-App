@@ -25,6 +25,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
+import org.mindrot.jbcrypt.BCrypt;
 
 
 public class RegisterController implements Initializable {   
@@ -101,6 +102,8 @@ public class RegisterController implements Initializable {
                     RegisterConfirmationLabel.setText("Já existe um utilizador com esse nome.");
                 }
             }
+            
+            queryResult.close();
         }catch(Exception e){
             e.printStackTrace();
             e.getCause();
@@ -113,7 +116,7 @@ public class RegisterController implements Initializable {
         
         String username = txtFieldUsername.getText();
         String email = txtFieldEmail.getText();
-        String pw = passFieldPasswordRegister.getText();
+        String pw = BCrypt.hashpw(passFieldPasswordRegister.getText(), BCrypt.gensalt());
         
         String insertFields = "INSERT INTO utilizadores(username, email, password) VALUES ('";
         String insertValues = username + "','" + email + "','" + pw + "')";
