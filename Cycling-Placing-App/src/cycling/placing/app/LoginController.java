@@ -13,9 +13,7 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
-import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
@@ -26,6 +24,7 @@ import javafx.stage.Stage;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import javafx.stage.StageStyle;
 import org.mindrot.jbcrypt.BCrypt;
 
 public class LoginController implements Initializable {   
@@ -35,29 +34,10 @@ public class LoginController implements Initializable {
     @FXML
     PasswordField passFieldPassword;
     
-    @FXML
-    ImageView AppLogo;
-    
-    @FXML
-    ImageView userLogo;
-    
-    @FXML
-    ImageView passwordLogo;
-    
-    @FXML
-    ImageView usersLogo;
-    
-    @FXML
-    ImageView exitLogo;
     
     @FXML
     ImageView minimizeLogo;
-    
-    @FXML
-    Hyperlink criarConta;
-    
-    @FXML
-    Hyperlink esqueceuPass;
+   
     
     @FXML
     Label LoginResult;
@@ -79,7 +59,37 @@ public class LoginController implements Initializable {
     
     public void userLogin(ActionEvent event) throws IOException {
         if(txtFieldUsername.getText().isBlank() == false && passFieldPassword.getText().isBlank() == false){
-            validateLogin();
+            if(validateLogin() == true){
+                CriarProvaController criarProvaController = new CriarProvaController(txtFieldUsername.getText());
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("CriarProva.fxml"));
+                loader.setController(criarProvaController);
+                Parent root = loader.load();
+
+                stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+                scene = new Scene(root);     
+        
+                root.setOnMousePressed(new EventHandler<MouseEvent>(){
+                    @Override
+                    public void handle(MouseEvent event) {
+                        xOffset = event.getSceneX();
+                        yOffset = event.getSceneY();
+                    }         
+                });
+
+                root.setOnMouseDragged(new EventHandler<MouseEvent>(){
+                    @Override
+                    public void handle(MouseEvent event) {
+                        stage.setX(event.getScreenX() - xOffset);
+                        stage.setY(event.getScreenY() - yOffset);
+                    }         
+                });
+                
+                stage.setScene(scene);
+                stage.show();
+           }
+            else{
+                LoginResult.setText("Login inválido. Tente outra vez.");
+            }
         }
         else{
             LoginResult.setText("Escreva o seu nome de utilizador e password!");
@@ -132,7 +142,7 @@ public class LoginController implements Initializable {
         stage.setIconified(true);
     }
     
-    public void validateLogin(){
+    public Boolean validateLogin(){
         DBConnection connectNow = new DBConnection();
         Connection connectDB = connectNow.getConnection();
         
@@ -153,10 +163,10 @@ public class LoginController implements Initializable {
             ResultSet queryResult = statement.executeQuery(verifylogin);
             while(queryResult.next()){
                 if(queryResult.getInt(1) == 1 && samePw == true){
-                    LoginResult.setText("Sucesso!");
+                    return true;
                 }
                 else{
-                    LoginResult.setText("Login inválido. Tente outra vez.");
+                    return false;
                 }
             }
             queryResult.close();
@@ -166,5 +176,6 @@ public class LoginController implements Initializable {
             e.printStackTrace();
             e.getCause();
         }
+        return false;
     }
 }

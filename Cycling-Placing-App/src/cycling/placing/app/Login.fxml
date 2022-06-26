@@ -37,7 +37,6 @@
                <font>
                   <Font name="Arial Black" size="15.0" />
                </font></Button>
-            <Hyperlink alignment="CENTER" layoutX="3.0" layoutY="375.0" prefHeight="23.0" prefWidth="320.0" text="Esqueceu-se da sua password?" />
             <Text fill="#0598ff" layoutX="108.0" layoutY="118.0" strokeType="OUTSIDE" strokeWidth="0.0" text="User Login">
                <font>
                   <Font size="22.0" />
