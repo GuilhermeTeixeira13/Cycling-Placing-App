@@ -24,7 +24,6 @@ import javafx.stage.Stage;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
-import javafx.stage.StageStyle;
 import org.mindrot.jbcrypt.BCrypt;
 
 public class LoginController implements Initializable {   
@@ -60,8 +59,8 @@ public class LoginController implements Initializable {
     public void userLogin(ActionEvent event) throws IOException {
         if(txtFieldUsername.getText().isBlank() == false && passFieldPassword.getText().isBlank() == false){
             if(validateLogin() == true){
-                CriarProvaController criarProvaController = new CriarProvaController(txtFieldUsername.getText());
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("CriarProva.fxml"));
+                SelectProvaController criarProvaController = new SelectProvaController(txtFieldUsername.getText());
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("SelectProva.fxml"));
                 loader.setController(criarProvaController);
                 Parent root = loader.load();
 

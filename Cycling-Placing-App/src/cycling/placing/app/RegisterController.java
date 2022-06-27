@@ -40,30 +40,9 @@ public class RegisterController implements Initializable {
     
     @FXML
     TextField txtFieldEmail;
-    
-    @FXML
-    ImageView AppLogo;
-    
-    @FXML
-    ImageView userLogo;
-    
-    @FXML
-    ImageView passwordLogo;
-    
-    @FXML
-    ImageView usersLogo;
-    
-    @FXML
-    ImageView exitLogo;
-    
+
     @FXML
     ImageView minimizeLogo;
-    
-    @FXML
-    ImageView emailLogo;
-    
-    @FXML
-    Hyperlink criarConta;
     
     @FXML
     Label RegisterConfirmationLabel;
