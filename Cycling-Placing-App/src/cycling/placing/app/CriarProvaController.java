@@ -3,9 +3,11 @@ package cycling.placing.app;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.ResourceBundle;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -21,7 +23,10 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
@@ -64,16 +69,16 @@ public class CriarProvaController implements Initializable {
     Button btnAddEscalao;
 
     @FXML
-    Button btnVerEscaloes;
-
-    @FXML
     Button btnCriarProva;
     
     @FXML
     Button btnAddDistancia;
     
     @FXML
-    Button btnVerDistancias;
+    Button btnRemoverDistancia;
+            
+    @FXML
+    Button btnRemoverEscalao;
 
     @FXML
     ChoiceBox<Integer> ChoiceBoxIdadeMin;
@@ -86,6 +91,14 @@ public class CriarProvaController implements Initializable {
     
     @FXML
     CheckComboBox<String> CheckComboBoxDistancia;
+    
+    @FXML
+    TableView<Distancia> tableViewDistancias;
+    
+    @FXML
+    TableColumn<Distancia, Integer> distanciaColumn1;
+    
+    ObservableList<Distancia> distancias;
 
     ArrayList<String> categoriasList = new ArrayList<String>();
 
@@ -103,7 +116,7 @@ public class CriarProvaController implements Initializable {
     }
 
     @Override
-    public void initialize(URL url, ResourceBundle rb) {
+    public void initialize(URL url, ResourceBundle rb) {     
         checkboxMasculinos.selectedProperty().addListener(new ChangeListener<Boolean>() {
             @Override
             public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
@@ -161,8 +174,26 @@ public class CriarProvaController implements Initializable {
                 }
             }
         });
+        
+        distanciaColumn1.setCellValueFactory(new PropertyValueFactory<Distancia, Integer>("dist"));
     }
-
+    
+    @FXML
+    public void submitDistancia(ActionEvent event) {
+        Distancia d = new Distancia(Integer.parseInt(txtFieldDistancias.getText()));
+        distancias = tableViewDistancias.getItems();
+        distancias.add(d);
+        tableViewDistancias.setItems(distancias);
+        System.out.println("Distâncias -> "+distancias.toString());
+    }
+    
+    @FXML
+    public void removeDistancia(ActionEvent event) {
+        int selectedID = tableViewDistancias.getSelectionModel().getSelectedIndex();
+        tableViewDistancias.getItems().remove(selectedID);
+        System.out.println("Distâncias -> "+distancias.toString());
+    }
+    
     @FXML
     public void minimizeClicked(MouseEvent event) {
         Stage stage = (Stage) minimizeLogo.getScene().getWindow();

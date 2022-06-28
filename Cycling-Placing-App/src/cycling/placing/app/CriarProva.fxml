@@ -5,6 +5,8 @@
 <?import javafx.scene.control.ChoiceBox?>
 <?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
@@ -12,123 +14,124 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.shape.Line?>
 <?import javafx.scene.text.Font?>
-<?import javafx.scene.text.Text?>
 <?import org.controlsfx.control.CheckComboBox?>
 
-<BorderPane fx:id="sceneBorderPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="486.0" prefWidth="687.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1">
+<BorderPane fx:id="sceneBorderPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="625.0" prefWidth="804.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1">
    <left>
-      <AnchorPane prefHeight="485.0" prefWidth="188.0" style="-fx-background-color: #0598ff;" BorderPane.alignment="CENTER">
-         <children>
-            <ImageView fitHeight="141.0" fitWidth="149.0" layoutX="24.0" layoutY="150.0" pickOnBounds="true" preserveRatio="true">
-               <image>
-                  <Image url="@images/createRoute.png" />
-               </image>
-            </ImageView>
-            <Text fill="WHITE" layoutX="23.0" layoutY="325.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Criar Prova" wrappingWidth="143.482421875">
-               <font>
-                  <Font name="Arial Black" size="23.0" />
-               </font>
-            </Text>
-         </children>
-      </AnchorPane>
+      <AnchorPane prefHeight="625.0" prefWidth="20.0" style="-fx-background-color: #0598ff;" BorderPane.alignment="CENTER" />
    </left>
-   <right>
-      <AnchorPane prefHeight="485.0" prefWidth="506.0" BorderPane.alignment="CENTER">
+   <center>
+      <AnchorPane prefHeight="594.0" prefWidth="833.0" BorderPane.alignment="CENTER">
          <children>
-            <ImageView fx:id="minimizeLogo" fitHeight="22.0" fitWidth="23.0" layoutX="430.0" layoutY="17.0" onMouseClicked="#minimizeClicked" pickOnBounds="true" preserveRatio="true">
+            <ImageView fx:id="minimizeLogo" fitHeight="22.0" fitWidth="23.0" layoutX="719.0" layoutY="14.0" onMouseClicked="#minimizeClicked" pickOnBounds="true" preserveRatio="true">
                <image>
                   <Image url="@images/minimize.png" />
                </image>
             </ImageView>
-            <ImageView fx:id="exitLogo" fitHeight="20.0" fitWidth="20.0" layoutX="461.0" layoutY="18.0" onMouseClicked="#exitClicked" pickOnBounds="true" preserveRatio="true">
+            <ImageView fx:id="exitLogo" fitHeight="20.0" fitWidth="20.0" layoutX="750.0" layoutY="15.0" onMouseClicked="#exitClicked" pickOnBounds="true" preserveRatio="true">
                <image>
                   <Image url="@images/delete-button.png" />
                </image>
             </ImageView>
-            <TextField fx:id="txtFieldNomeProva" layoutX="69.0" layoutY="48.0" prefHeight="27.0" prefWidth="361.0" promptText="Nome da Prova" style="-fx-background-color: transparent; -fx-border-color: #0598ff; -fx-border-width: 2px 2px 2px 2px;" />
-            <DatePicker fx:id="datePickerdataProva" layoutX="71.0" layoutY="99.0" prefHeight="27.0" prefWidth="358.0" promptText="Data da Prova" />
-            <CheckBox fx:id="checkboxMasculinos" layoutX="160.0" layoutY="234.0" mnemonicParsing="false" text="Masculinos">
+            <TextField fx:id="txtFieldNomeProva" layoutX="71.0" layoutY="35.0" prefHeight="29.0" prefWidth="618.0" promptText="Nome da Prova" style="-fx-background-color: transparent; -fx-border-color: #0598ff; -fx-border-width: 2px 2px 2px 2px;" />
+            <DatePicker fx:id="datePickerdataProva" layoutX="71.0" layoutY="79.0" prefHeight="27.0" prefWidth="156.0" promptText="Data da Prova" />
+            <CheckBox fx:id="checkboxMasculinos" layoutX="79.0" layoutY="163.0" mnemonicParsing="false" text="Masculinos">
                <font>
                   <Font size="13.0" />
                </font>
             </CheckBox>
-            <Label alignment="CENTER" layoutY="200.0" prefHeight="23.0" prefWidth="499.0" text="Categorias" textFill="#0598ff">
+            <Label alignment="CENTER" layoutX="73.0" layoutY="131.0" prefHeight="23.0" prefWidth="100.0" text="Categorias" textFill="#0598ff">
                <font>
                   <Font name="Arial Black" size="15.0" />
                </font>
             </Label>
-            <TextField fx:id="txtFieldDistancias" layoutX="70.0" layoutY="145.0" prefHeight="29.0" prefWidth="121.0" promptText="Distância - Ex: 50" style="-fx-background-color: transparent; -fx-border-color: #0598ff; -fx-border-width: 2px 2px 2px 2px;" />
-            <TextField fx:id="txtFieldEscalao" layoutX="19.0" layoutY="333.0" prefHeight="27.0" prefWidth="104.0" promptText="Escalão - Ex: Master40" style="-fx-background-color: transparent; -fx-border-color: #0598ff; -fx-border-width: 2px 2px 2px 2px;">
+            <TextField fx:id="txtFieldDistancias" layoutX="21.0" layoutY="251.0" prefHeight="29.0" prefWidth="121.0" promptText="Distância - Ex: 50" style="-fx-background-color: transparent; -fx-border-color: #0598ff; -fx-border-width: 2px 2px 2px 2px;" />
+            <TextField fx:id="txtFieldEscalao" layoutX="286.0" layoutY="252.0" prefHeight="27.0" prefWidth="104.0" promptText="Escalão - Ex: Master40" style="-fx-background-color: transparent; -fx-border-color: #0598ff; -fx-border-width: 2px 2px 2px 2px;">
                <font>
                   <Font size="9.0" />
                </font></TextField>
-            <ChoiceBox fx:id="ChoiceBoxIdadeMin" layoutX="130.0" layoutY="335.0" prefHeight="25.0" prefWidth="46.0" />
-            <Button fx:id="btnAddEscalao" layoutX="403.0" layoutY="335.0" mnemonicParsing="false" prefHeight="24.0" prefWidth="67.0" style="-fx-background-color: #0598ff;" text="Add" textFill="WHITE">
+            <ChoiceBox fx:id="ChoiceBoxIdadeMin" layoutX="402.0" layoutY="253.0" prefHeight="25.0" prefWidth="46.0" />
+            <Button fx:id="btnAddEscalao" layoutX="675.0" layoutY="249.0" mnemonicParsing="false" prefHeight="28.0" prefWidth="67.0" style="-fx-background-color: #0598ff;" text="Add" textFill="WHITE">
                <font>
                   <Font size="11.0" />
                </font>
             </Button>
-            <ChoiceBox fx:id="ChoiceBoxIdadeMax" layoutX="190.0" layoutY="335.0" prefHeight="25.0" prefWidth="46.0" />
-            <Button fx:id="btnVerEscaloes" layoutX="152.0" layoutY="373.0" mnemonicParsing="false" prefHeight="27.0" prefWidth="168.0" style="-fx-background-color: #0598ff;" text="Ver escalões adicionados" textFill="WHITE">
-               <font>
-                  <Font size="13.0" />
-               </font>
-            </Button>
-            <Button fx:id="btnCriarProva" layoutX="167.0" layoutY="432.0" mnemonicParsing="false" prefHeight="41.0" prefWidth="143.0" style="-fx-background-color: #0598ff;" text="CRIAR PROVA" textFill="WHITE">
+            <ChoiceBox fx:id="ChoiceBoxIdadeMax" layoutX="462.0" layoutY="253.0" prefHeight="25.0" prefWidth="46.0" />
+            <Button fx:id="btnCriarProva" layoutX="332.0" layoutY="560.0" mnemonicParsing="false" prefHeight="41.0" prefWidth="143.0" style="-fx-background-color: #0598ff;" text="CRIAR PROVA" textFill="WHITE">
                <font>
                   <Font name="Arial Black" size="12.0" />
                </font></Button>
-            <CheckBox fx:id="checkboxFemininos" layoutX="161.0" layoutY="263.0" mnemonicParsing="false" text="Femininos">
+            <CheckBox fx:id="checkboxFemininos" layoutX="79.0" layoutY="189.0" mnemonicParsing="false" text="Femininos">
                <font>
                   <Font size="13.0" />
                </font>
             </CheckBox>
-            <CheckBox fx:id="checkboxParaciclismo" layoutX="257.0" layoutY="236.0" mnemonicParsing="false" text="Paracisclismo">
+            <CheckBox fx:id="checkboxParaciclismo" layoutX="191.0" layoutY="164.0" mnemonicParsing="false" text="Paracisclismo">
                <font>
                   <Font size="13.0" />
                </font>
             </CheckBox>
-            <CheckBox fx:id="checkboxEBIKE" layoutX="258.0" layoutY="262.0" mnemonicParsing="false" text="E-BIKE">
+            <CheckBox fx:id="checkboxEBIKE" layoutX="191.0" layoutY="190.0" mnemonicParsing="false" text="E-BIKE">
                <font>
                   <Font size="13.0" />
                </font>
             </CheckBox>
-            <Line endX="273.33331298828125" layoutX="216.0" layoutY="306.0" startX="-206.6666717529297" />
-            <CheckComboBox fx:id="CheckComboBoxCategoria" layoutX="249.0" layoutY="335.0" prefHeight="25.0" prefWidth="64.0" />
-            <CheckComboBox fx:id="CheckComboBoxDistancia" layoutX="326.0" layoutY="334.0" prefHeight="25.0" prefWidth="64.0" />
-            <Line endX="273.33331298828125" layoutX="217.0" layoutY="420.0" startX="-206.6666717529297" />
-            <Line endX="273.33331298828125" layoutX="214.0" layoutY="198.0" startX="-206.6666717529297" />
-            <Button fx:id="btnAddDistancia" layoutX="202.0" layoutY="145.0" mnemonicParsing="false" prefHeight="27.0" prefWidth="74.0" style="-fx-background-color: #0598ff;" text="Add" textFill="WHITE">
+            <CheckComboBox fx:id="CheckComboBoxCategoria" layoutX="521.0" layoutY="253.0" prefHeight="25.0" prefWidth="64.0" />
+            <CheckComboBox fx:id="CheckComboBoxDistancia" layoutX="598.0" layoutY="252.0" prefHeight="25.0" prefWidth="64.0" />
+            <Line endX="479.0" layoutX="242.0" layoutY="546.0" startX="-206.6666717529297" />
+            <Button fx:id="btnAddDistancia" layoutX="147.0" layoutY="251.0" mnemonicParsing="false" onAction="#submitDistancia" prefHeight="27.0" prefWidth="74.0" style="-fx-background-color: #0598ff;" text="Add" textFill="WHITE">
                <font>
                   <Font size="11.0" />
                </font>
             </Button>
-            <Button fx:id="btnVerDistancias" layoutX="285.0" layoutY="145.0" mnemonicParsing="false" prefHeight="27.0" prefWidth="145.0" style="-fx-background-color: #0598ff;" text="Ver distâncias adicionadas" textFill="WHITE">
+            <Label layoutX="403.0" layoutY="235.0" text="Idade Min.">
+               <font>
+                  <Font size="9.0" />
+               </font>
+            </Label>
+            <Label layoutX="463.0" layoutY="235.0" text="Idade Máx.">
+               <font>
+                  <Font size="9.0" />
+               </font>
+            </Label>
+            <Label layoutX="532.0" layoutY="235.0" prefHeight="13.0" prefWidth="40.0" text="Categoria">
+               <font>
+                  <Font size="9.0" />
+               </font>
+            </Label>
+            <Label layoutX="611.0" layoutY="235.0" prefHeight="13.0" prefWidth="40.0" text="Distância">
+               <font>
+                  <Font size="9.0" />
+               </font>
+            </Label>
+            <Line endX="479.0" layoutX="243.0" layoutY="122.0" startX="-206.6666717529297" />
+            <Line endX="479.0" layoutX="242.0" layoutY="226.0" startX="-206.6666717529297" />
+            <Line endX="-100.0" endY="319.5" layoutX="366.0" layoutY="226.0" startX="-100.0" />
+            <TableView layoutX="290.0" layoutY="303.0" prefHeight="193.0" prefWidth="451.0">
+              <columns>
+                <TableColumn prefWidth="111.0" text="Escalão" />
+                <TableColumn prefWidth="76.0" text="Idade Min." />
+                  <TableColumn prefWidth="72.0" text="Idade Máx." />
+                  <TableColumn prefWidth="124.0" text="Categoria" />
+                  <TableColumn prefWidth="67.0" text="Distância" />
+              </columns>
+            </TableView>
+            <TableView fx:id="tableViewDistancias" layoutX="42.0" layoutY="304.0" prefHeight="193.0" prefWidth="188.0">
+              <columns>
+                <TableColumn fx:id="distanciaColumn1" prefWidth="187.0" text="Distância" />
+              </columns>
+            </TableView>
+            <Button fx:id="btnRemoverDistancia" layoutX="84.0" layoutY="504.0" mnemonicParsing="false" onAction="#removeDistancia" prefHeight="27.0" prefWidth="105.0" style="-fx-background-color: #0598ff;" text="Remover Distância" textFill="WHITE">
                <font>
                   <Font size="11.0" />
                </font>
             </Button>
-            <Label layoutX="131.0" layoutY="317.0" text="Idade Min.">
+            <Button fx:id="btnAddDistancia11" layoutX="472.0" layoutY="504.0" mnemonicParsing="false" prefHeight="27.0" prefWidth="98.0" style="-fx-background-color: #0598ff;" text="Remover Escalão" textFill="WHITE">
                <font>
-                  <Font size="9.0" />
+                  <Font size="11.0" />
                </font>
-            </Label>
-            <Label layoutX="191.0" layoutY="317.0" text="Idade Máx.">
-               <font>
-                  <Font size="9.0" />
-               </font>
-            </Label>
-            <Label layoutX="260.0" layoutY="317.0" prefHeight="13.0" prefWidth="40.0" text="Categoria">
-               <font>
-                  <Font size="9.0" />
-               </font>
-            </Label>
-            <Label layoutX="339.0" layoutY="317.0" prefHeight="13.0" prefWidth="40.0" text="Distância">
-               <font>
-                  <Font size="9.0" />
-               </font>
-            </Label>
+            </Button>
          </children>
       </AnchorPane>
-   </right>
+   </center>
 </BorderPane>
