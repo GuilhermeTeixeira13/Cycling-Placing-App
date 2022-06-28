@@ -26,6 +26,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
+import org.controlsfx.control.CheckComboBox;
 
 public class CriarProvaController implements Initializable {
 
@@ -67,6 +68,12 @@ public class CriarProvaController implements Initializable {
 
     @FXML
     Button btnCriarProva;
+    
+    @FXML
+    Button btnAddDistancia;
+    
+    @FXML
+    Button btnVerDistancias;
 
     @FXML
     ChoiceBox<Integer> ChoiceBoxIdadeMin;
@@ -75,7 +82,10 @@ public class CriarProvaController implements Initializable {
     ChoiceBox<Integer> ChoiceBoxIdadeMax;
 
     @FXML
-    ChoiceBox<String> ChoiceBoxCategoria;
+    CheckComboBox<String> CheckComboBoxCategoria;
+    
+    @FXML
+    CheckComboBox<String> CheckComboBoxDistancia;
 
     ArrayList<String> categoriasList = new ArrayList<String>();
 
@@ -102,7 +112,7 @@ public class CriarProvaController implements Initializable {
                 else
                     categoriasList.remove("Masculinos");
                 System.out.println(categoriasList);
-                ChoiceBoxCategoria.getItems().setAll(categoriasList);
+                CheckComboBoxCategoria.getItems().setAll(categoriasList);
             }
         });
 
@@ -114,7 +124,7 @@ public class CriarProvaController implements Initializable {
                 else
                     categoriasList.remove("Femininos");
                 System.out.println(categoriasList);
-                ChoiceBoxCategoria.getItems().setAll(categoriasList);
+                CheckComboBoxCategoria.getItems().setAll(categoriasList);
             }
         });
         
@@ -126,7 +136,7 @@ public class CriarProvaController implements Initializable {
                 else
                     categoriasList.remove("Paraciclismo");
                 System.out.println(categoriasList);
-                ChoiceBoxCategoria.getItems().setAll(categoriasList);
+                CheckComboBoxCategoria.getItems().setAll(categoriasList);
             }
         });
               
@@ -138,7 +148,17 @@ public class CriarProvaController implements Initializable {
                 else
                     categoriasList.remove("E-BIKE");
                 System.out.println(categoriasList);
-                ChoiceBoxCategoria.getItems().setAll(categoriasList);
+                CheckComboBoxCategoria.getItems().setAll(categoriasList);
+            }
+        });
+        
+        txtFieldDistancias.textProperty().addListener(new ChangeListener<String>() {
+            @Override
+            public void changed(ObservableValue<? extends String> observable, String oldValue, 
+                String newValue) {
+                if (!newValue.matches("\\d*")) {
+                    txtFieldDistancias.setText(newValue.replaceAll("[^\\d]", ""));
+                }
             }
         });
     }
