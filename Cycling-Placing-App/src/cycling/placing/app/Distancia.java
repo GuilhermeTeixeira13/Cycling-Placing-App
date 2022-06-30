@@ -7,8 +7,8 @@ public class Distancia {
         this.dist = dist;
     }
     
-    public Integer getDist() {
-        return dist;
+    public String getDist() {
+        return dist+" KM";
     }
 
     public void setDist(Integer dist) {

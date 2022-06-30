@@ -4,7 +4,10 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.ResourceBundle;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
@@ -81,10 +84,10 @@ public class CriarProvaController implements Initializable {
     Button btnRemoverEscalao;
 
     @FXML
-    ChoiceBox<Integer> ChoiceBoxIdadeMin;
+    TextField txtFieldIdadeMin;
 
     @FXML
-    ChoiceBox<Integer> ChoiceBoxIdadeMax;
+    TextField txtFieldIdadeMax;
 
     @FXML
     CheckComboBox<String> CheckComboBoxCategoria;
@@ -99,6 +102,26 @@ public class CriarProvaController implements Initializable {
     TableColumn<Distancia, Integer> distanciaColumn1;
     
     ObservableList<Distancia> distancias;
+    
+    @FXML
+    TableView<Escalao> tableViewEscaloes;
+    
+    @FXML
+    TableColumn<Escalao, String> nomeEscalaoColumn;
+    
+    @FXML
+    TableColumn<Escalao, Integer> idadeMinColumn;
+    
+    @FXML
+    TableColumn<Escalao, Integer> idadeMaxColumn;
+    
+    @FXML
+    TableColumn<Escalao,String> categoriaColumn;
+       
+    @FXML
+    TableColumn<Escalao, Integer> distanciaColumn;
+    
+    ObservableList<Escalao> escaloes;
 
     ArrayList<String> categoriasList = new ArrayList<String>();
 
@@ -116,7 +139,7 @@ public class CriarProvaController implements Initializable {
     }
 
     @Override
-    public void initialize(URL url, ResourceBundle rb) {     
+    public void initialize(URL url, ResourceBundle rb) { 
         checkboxMasculinos.selectedProperty().addListener(new ChangeListener<Boolean>() {
             @Override
             public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
@@ -175,7 +198,33 @@ public class CriarProvaController implements Initializable {
             }
         });
         
+        txtFieldIdadeMin.textProperty().addListener(new ChangeListener<String>() {
+            @Override
+            public void changed(ObservableValue<? extends String> observable, String oldValue, 
+                String newValue) {
+                if (!newValue.matches("\\d*")) {
+                    txtFieldIdadeMin.setText(newValue.replaceAll("[^\\d]", ""));
+                }
+            }
+        });
+        
+        txtFieldIdadeMax.textProperty().addListener(new ChangeListener<String>() {
+            @Override
+            public void changed(ObservableValue<? extends String> observable, String oldValue, 
+                String newValue) {
+                if (!newValue.matches("\\d*")) {
+                    txtFieldIdadeMax.setText(newValue.replaceAll("[^\\d]", ""));
+                }
+            }
+        });
+        
         distanciaColumn1.setCellValueFactory(new PropertyValueFactory<Distancia, Integer>("dist"));
+        
+        nomeEscalaoColumn.setCellValueFactory(new PropertyValueFactory<Escalao, String>("nome"));
+        idadeMinColumn.setCellValueFactory(new PropertyValueFactory<Escalao, Integer>("idadeMin"));
+        idadeMaxColumn.setCellValueFactory(new PropertyValueFactory<Escalao, Integer>("idadeMax"));
+        categoriaColumn.setCellValueFactory(new PropertyValueFactory<Escalao, String>("categoria"));
+        distanciaColumn.setCellValueFactory(new PropertyValueFactory<Escalao, Integer>("dist"));
     }
     
     @FXML
@@ -184,7 +233,29 @@ public class CriarProvaController implements Initializable {
         distancias = tableViewDistancias.getItems();
         distancias.add(d);
         tableViewDistancias.setItems(distancias);
-        System.out.println("Distâncias -> "+distancias.toString());
+        System.out.println("Distâncias -> "+distancias.toString());   
+        preencherComboBoxDistancias(distancias); 
+    }
+    
+    @FXML
+    public void submitEscalao(ActionEvent event) {
+        ObservableList categoriasSelecionadas = CheckComboBoxCategoria.getCheckModel().getCheckedItems();
+        ObservableList distanciasSelecionadas = CheckComboBoxDistancia.getCheckModel().getCheckedItems();
+        
+        categoriasSelecionadas.forEach((Object categoria) -> { 
+            distanciasSelecionadas.forEach((Object distancia) -> { 
+                String[] parts = distancia.toString().split(" ");
+                Distancia d = new Distancia(Integer.parseInt(parts[0]));
+                Escalao e;
+                e = new Escalao(txtFieldEscalao.getText(),Integer.parseInt(txtFieldIdadeMin.getText()), Integer.parseInt(txtFieldIdadeMax.getText()), categoria.toString(), d);
+                System.out.println(e.toString());
+                escaloes = tableViewEscaloes.getItems(); 
+                escaloes.add(e);
+                tableViewEscaloes.setItems(escaloes);
+            });
+        });
+        
+        System.out.println("Escalões -> "+escaloes.toString());
     }
     
     @FXML
@@ -192,6 +263,23 @@ public class CriarProvaController implements Initializable {
         int selectedID = tableViewDistancias.getSelectionModel().getSelectedIndex();
         tableViewDistancias.getItems().remove(selectedID);
         System.out.println("Distâncias -> "+distancias.toString());
+        preencherComboBoxDistancias(distancias); 
+    }
+    
+    @FXML
+    public void removeEscalao(ActionEvent event) {
+        int selectedID = tableViewEscaloes.getSelectionModel().getSelectedIndex();
+        tableViewEscaloes.getItems().remove(selectedID);
+        System.out.println("Escalões -> "+escaloes.toString());
+    }
+    
+    public void preencherComboBoxDistancias(ObservableList<Distancia> distancias){
+        ArrayList<Distancia> ALdistancias = new ArrayList<Distancia>(distancias);
+        ArrayList<String> ALdistanciasString = new ArrayList<String>();
+        for(int i=0; i<ALdistancias.size(); i++){
+            ALdistanciasString.add(ALdistancias.get(i).getDist());
+        }
+        CheckComboBoxDistancia.getItems().setAll(ALdistanciasString);
     }
     
     @FXML
