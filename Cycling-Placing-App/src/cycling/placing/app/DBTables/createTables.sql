@@ -1,23 +1,37 @@
-CREATE TABLE `Inscritos` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `nome` varchar(255) NOT NULL,
-  `dataNascimento` DATE	NOT NULL,
-  `telemovel` varchar(15) NOT NULL,
-  `idade` tinyint NULL,	
-  `escalao` varchar(10) NULL,
-  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`)	
+CREATE TABLE `Escalao` (
+  `id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  `idProva` INT(11) NOT NULL,
+  `escalaoNome` varchar(255) NOT NULL, 
+  `categoria` varchar(255) NOT NULL, 
+  `idadeMin` INT UNSIGNED NULL,	
+  `idadeMax` INT UNSIGNED NULL,
+  `modified` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP	
 );
 
-CREATE TABLE `Geral` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
+CREATE TABLE `Ciclista` (
+  `id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
   `nome` varchar(255) NOT NULL,
   `dataNascimento` DATE	NOT NULL,
-  `telemovel` varchar(15) NOT NULL,
-  `idade` tinyint NULL,	
-  `escalao` varchar(10) NULL,
-  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`)
+  `dorsal` INT UNSIGNED NULL,
+  `modified` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+CREATE TABLE `Participacao` (
+  `id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  `idCiclista` INT(11) NOT NULL,
+  `idProva` INT(11) NOT NULL,
+  `tempoProva` TIME NULL,
+  `escalaoNome` varchar(255) NOT NULL, 
+  `modified` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+CREATE TABLE `Prova` (
+  `id` INT(11) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  `ownerID` INT(11) NOT NULL,
+  `nome` varchar(255) NOT NULL,
+  `dataRealizacao` DATE	NOT NULL,
+  `distancia` INT UNSIGNED NULL,
+  `modified` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
 CREATE TABLE `Utilizadores` (
@@ -25,11 +39,5 @@ CREATE TABLE `Utilizadores` (
   `username` VARCHAR(256) NOT NULL,
   `email` VARCHAR(256) NOT NULL,
   `password` text NOT NULL,
-  `modified` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-);
-
-CREATE TABLE `Provas` (
-  `id` INT(11) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-  `userID` INT(11) NOT NULL,
   `modified` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );

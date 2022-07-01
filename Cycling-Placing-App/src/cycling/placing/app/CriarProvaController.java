@@ -1,5 +1,6 @@
 package cycling.placing.app;
 
+import cycling.placing.app.DBTables.DBConnection;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -35,6 +36,12 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import org.controlsfx.control.CheckComboBox;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.Statement;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import org.mindrot.jbcrypt.BCrypt;
 
 public class CriarProvaController implements Initializable {
 
@@ -57,29 +64,17 @@ public class CriarProvaController implements Initializable {
     DatePicker datePickerdataProva;
 
     @FXML
-    CheckBox checkboxMasculinos;
-
-    @FXML
-    CheckBox checkboxFemininos;
-
-    @FXML
-    CheckBox checkboxParaciclismo;
-
-    @FXML
-    CheckBox checkboxEBIKE;
-
-    @FXML
     Button btnAddEscalao;
 
     @FXML
     Button btnCriarProva;
-    
+
     @FXML
     Button btnAddDistancia;
-    
+
     @FXML
     Button btnRemoverDistancia;
-            
+
     @FXML
     Button btnRemoverEscalao;
 
@@ -91,36 +86,36 @@ public class CriarProvaController implements Initializable {
 
     @FXML
     CheckComboBox<String> CheckComboBoxCategoria;
-    
+
     @FXML
     CheckComboBox<String> CheckComboBoxDistancia;
-    
+
     @FXML
     TableView<Distancia> tableViewDistancias;
-    
+
     @FXML
     TableColumn<Distancia, Integer> distanciaColumn1;
-    
+
     ObservableList<Distancia> distancias;
-    
+
     @FXML
     TableView<Escalao> tableViewEscaloes;
-    
+
     @FXML
     TableColumn<Escalao, String> nomeEscalaoColumn;
-    
+
     @FXML
     TableColumn<Escalao, Integer> idadeMinColumn;
-    
+
     @FXML
     TableColumn<Escalao, Integer> idadeMaxColumn;
-    
+
     @FXML
-    TableColumn<Escalao,String> categoriaColumn;
-       
+    TableColumn<Escalao, String> categoriaColumn;
+
     @FXML
     TableColumn<Escalao, Integer> distanciaColumn;
-    
+
     ObservableList<Escalao> escaloes;
 
     ArrayList<String> categoriasList = new ArrayList<String>();
@@ -139,149 +134,109 @@ public class CriarProvaController implements Initializable {
     }
 
     @Override
-    public void initialize(URL url, ResourceBundle rb) { 
-        checkboxMasculinos.selectedProperty().addListener(new ChangeListener<Boolean>() {
-            @Override
-            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-                if(checkboxMasculinos.isSelected())
-                    categoriasList.add("Masculinos");
-                else
-                    categoriasList.remove("Masculinos");
-                System.out.println(categoriasList);
-                CheckComboBoxCategoria.getItems().setAll(categoriasList);
-            }
-        });
+    public void initialize(URL url, ResourceBundle rb) {
+        categoriasList.add("Masculinos");
+        categoriasList.add("Femininos");
+        categoriasList.add("Paraciclismo");
+        categoriasList.add("E-BIKE");
+        CheckComboBoxCategoria.getItems().setAll(categoriasList);
 
-        checkboxFemininos.selectedProperty().addListener(new ChangeListener<Boolean>() {
-            @Override
-            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-                if(checkboxFemininos.isSelected())
-                    categoriasList.add("Femininos");
-                else
-                    categoriasList.remove("Femininos");
-                System.out.println(categoriasList);
-                CheckComboBoxCategoria.getItems().setAll(categoriasList);
-            }
-        });
-        
-        checkboxParaciclismo.selectedProperty().addListener(new ChangeListener<Boolean>() {
-            @Override
-            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-                if(checkboxParaciclismo.isSelected())
-                    categoriasList.add("Paraciclismo");
-                else
-                    categoriasList.remove("Paraciclismo");
-                System.out.println(categoriasList);
-                CheckComboBoxCategoria.getItems().setAll(categoriasList);
-            }
-        });
-              
-        checkboxEBIKE.selectedProperty().addListener(new ChangeListener<Boolean>() {
-            @Override
-            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-                if(checkboxEBIKE.isSelected())
-                    categoriasList.add("E-BIKE");
-                else
-                    categoriasList.remove("E-BIKE");
-                System.out.println(categoriasList);
-                CheckComboBoxCategoria.getItems().setAll(categoriasList);
-            }
-        });
-        
         txtFieldDistancias.textProperty().addListener(new ChangeListener<String>() {
             @Override
-            public void changed(ObservableValue<? extends String> observable, String oldValue, 
-                String newValue) {
+            public void changed(ObservableValue<? extends String> observable, String oldValue,
+                    String newValue) {
                 if (!newValue.matches("\\d*")) {
                     txtFieldDistancias.setText(newValue.replaceAll("[^\\d]", ""));
                 }
             }
         });
-        
+
         txtFieldIdadeMin.textProperty().addListener(new ChangeListener<String>() {
             @Override
-            public void changed(ObservableValue<? extends String> observable, String oldValue, 
-                String newValue) {
+            public void changed(ObservableValue<? extends String> observable, String oldValue,
+                    String newValue) {
                 if (!newValue.matches("\\d*")) {
                     txtFieldIdadeMin.setText(newValue.replaceAll("[^\\d]", ""));
                 }
             }
         });
-        
+
         txtFieldIdadeMax.textProperty().addListener(new ChangeListener<String>() {
             @Override
-            public void changed(ObservableValue<? extends String> observable, String oldValue, 
-                String newValue) {
+            public void changed(ObservableValue<? extends String> observable, String oldValue,
+                    String newValue) {
                 if (!newValue.matches("\\d*")) {
                     txtFieldIdadeMax.setText(newValue.replaceAll("[^\\d]", ""));
                 }
             }
         });
-        
+
         distanciaColumn1.setCellValueFactory(new PropertyValueFactory<Distancia, Integer>("dist"));
-        
+
         nomeEscalaoColumn.setCellValueFactory(new PropertyValueFactory<Escalao, String>("nome"));
         idadeMinColumn.setCellValueFactory(new PropertyValueFactory<Escalao, Integer>("idadeMin"));
         idadeMaxColumn.setCellValueFactory(new PropertyValueFactory<Escalao, Integer>("idadeMax"));
         categoriaColumn.setCellValueFactory(new PropertyValueFactory<Escalao, String>("categoria"));
         distanciaColumn.setCellValueFactory(new PropertyValueFactory<Escalao, Integer>("dist"));
     }
-    
+
     @FXML
     public void submitDistancia(ActionEvent event) {
         Distancia d = new Distancia(Integer.parseInt(txtFieldDistancias.getText()));
         distancias = tableViewDistancias.getItems();
         distancias.add(d);
         tableViewDistancias.setItems(distancias);
-        System.out.println("Distâncias -> "+distancias.toString());   
-        preencherComboBoxDistancias(distancias); 
+        preencherComboBoxDistancias(distancias);
     }
-    
+
     @FXML
     public void submitEscalao(ActionEvent event) {
         ObservableList categoriasSelecionadas = CheckComboBoxCategoria.getCheckModel().getCheckedItems();
         ObservableList distanciasSelecionadas = CheckComboBoxDistancia.getCheckModel().getCheckedItems();
-        
-        categoriasSelecionadas.forEach((Object categoria) -> { 
-            distanciasSelecionadas.forEach((Object distancia) -> { 
-                String[] parts = distancia.toString().split(" ");
-                Distancia d = new Distancia(Integer.parseInt(parts[0]));
-                Escalao e;
-                e = new Escalao(txtFieldEscalao.getText(),Integer.parseInt(txtFieldIdadeMin.getText()), Integer.parseInt(txtFieldIdadeMax.getText()), categoria.toString(), d);
-                System.out.println(e.toString());
-                escaloes = tableViewEscaloes.getItems(); 
-                escaloes.add(e);
-                tableViewEscaloes.setItems(escaloes);
+
+        if (categoriasSelecionadas.isEmpty() || distanciasSelecionadas.isEmpty()) {
+            System.out.println("Preencha todos os campos!!");
+        } else {
+            categoriasSelecionadas.forEach((Object categoria) -> {
+                distanciasSelecionadas.forEach((Object distancia) -> {
+                    String[] parts = distancia.toString().split(" ");
+                    Distancia d = new Distancia(Integer.parseInt(parts[0]));
+                    Escalao e;
+                    e = new Escalao(txtFieldEscalao.getText(), Integer.parseInt(txtFieldIdadeMin.getText()), Integer.parseInt(txtFieldIdadeMax.getText()), categoria.toString(), d);
+                    escaloes = tableViewEscaloes.getItems();
+                    escaloes.add(e);
+                    tableViewEscaloes.setItems(escaloes);
+                });
             });
-        });
-        
-        System.out.println("Escalões -> "+escaloes.toString());
+
+            System.out.println("Escalões -> " + escaloes.toString());
+        }
     }
-    
+
     @FXML
     public void removeDistancia(ActionEvent event) {
         int selectedID = tableViewDistancias.getSelectionModel().getSelectedIndex();
         tableViewDistancias.getItems().remove(selectedID);
-        System.out.println("Distâncias -> "+distancias.toString());
-        preencherComboBoxDistancias(distancias); 
+        System.out.println("Distâncias -> " + distancias.toString());
+        preencherComboBoxDistancias(distancias);
     }
-    
+
     @FXML
     public void removeEscalao(ActionEvent event) {
         int selectedID = tableViewEscaloes.getSelectionModel().getSelectedIndex();
         tableViewEscaloes.getItems().remove(selectedID);
-        System.out.println("Escalões -> "+escaloes.toString());
+        System.out.println("Escalões -> " + escaloes.toString());
     }
-    
-    public void preencherComboBoxDistancias(ObservableList<Distancia> distancias){
+
+    public void preencherComboBoxDistancias(ObservableList<Distancia> distancias) {
         ArrayList<Distancia> ALdistancias = new ArrayList<Distancia>(distancias);
         ArrayList<String> ALdistanciasString = new ArrayList<String>();
-        for(int i=0; i<ALdistancias.size(); i++){
+        for (int i = 0; i < ALdistancias.size(); i++) {
             ALdistanciasString.add(ALdistancias.get(i).getDist());
         }
         CheckComboBoxDistancia.getItems().setAll(ALdistanciasString);
     }
-    
+
     @FXML
     public void minimizeClicked(MouseEvent event) {
         Stage stage = (Stage) minimizeLogo.getScene().getWindow();
@@ -299,5 +254,138 @@ public class CriarProvaController implements Initializable {
             stage = (Stage) sceneBorderPane.getScene().getWindow();
             stage.close();
         }
+    }
+
+    @FXML
+    public void gravarProva(ActionEvent event) {
+        if (distancias != null && escaloes != null) {
+            ArrayList<Escalao> ALescaloes = new ArrayList<Escalao>(escaloes);
+            ArrayList<Distancia> ALdistancias = new ArrayList<Distancia>(distancias);
+
+            for (int i = 0; i < ALdistancias.size(); i++) {
+                String ownerID = getOwnerID();
+                String NomeProva = txtFieldNomeProva.getText();
+                LocalDate dataProva = datePickerdataProva.getValue();
+                String distanciaProva = ALdistancias.get(i).getDist();
+                String[] distanciaPartes = distanciaProva.split(" ");
+                System.out.println("A dist é -> "+distanciaPartes[0]);
+
+                if (existeProvaRepetida(ownerID, NomeProva, distanciaProva, dataProva.toString())) {
+                    System.out.println("Você já criou uma prova com o mesmo nome e distância, para o mesmo dia!!!");
+                } else {
+                    registaProva(ownerID, NomeProva, dataProva.toString(), distanciaPartes[0]);
+                    String provaID = getProvaID(ownerID, NomeProva, dataProva.toString(), distanciaPartes[0]);
+                    for (int j = 0; j < ALescaloes.size(); j++) {
+                        registaEscalao(provaID, ALescaloes.get(j).getNome(), ALescaloes.get(j).getCategoria(), ALescaloes.get(j).getIdadeMin(), ALescaloes.get(j).getIdadeMax());
+                    }
+                }
+            }
+
+        } else {
+            System.out.println("Preencha todos os campos!!");
+        }
+    }
+
+    public String getOwnerID() {
+        String ownerID = "";
+
+        DBConnection connectNow = new DBConnection();
+        Connection connectDB = connectNow.getConnection();
+
+        String getUserID = "SELECT id FROM utilizadores WHERE username = '" + this.username + "'";
+        try {
+            Statement statement = connectDB.createStatement();
+            ResultSet queryResultgetUserID = statement.executeQuery(getUserID);
+            while (queryResultgetUserID.next()) {
+                ownerID = queryResultgetUserID.getString("id");
+            }
+            queryResultgetUserID.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+            e.getCause();
+        }
+
+        return ownerID;
+    }
+
+    public String getProvaID(String ownerID, String NomeProva, String DataProva, String distanciaProva) {
+        String provaID = "";
+
+        DBConnection connectNow = new DBConnection();
+        Connection connectDB = connectNow.getConnection();
+
+        String getProvaID = "SELECT id FROM Prova WHERE ownerID = '" + ownerID + "' AND nome = '" + NomeProva + "' AND distancia = '"+distanciaProva+"' AND dataRealizacao = '"+DataProva+"'";
+        try {
+            Statement statement = connectDB.createStatement();
+            ResultSet queryResultgetProvaID = statement.executeQuery(getProvaID);
+            while (queryResultgetProvaID.next()) {
+                provaID = queryResultgetProvaID.getString("id");
+            }
+            queryResultgetProvaID.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+            e.getCause();
+        }
+
+        return provaID;
+    }
+
+    public void registaProva(String ownerID, String NomeProva, String DataProva, String distanciaProva) {
+        DBConnection connectNow = new DBConnection();
+        Connection connectDB = connectNow.getConnection();
+
+        String insertFields = "INSERT INTO prova(ownerID, nome, dataRealizacao, distancia) VALUES ('";
+        String insertValues = ownerID + "','" + NomeProva + "', DATE '" + DataProva + "'," + distanciaProva + ")";
+        String insertToProva = insertFields + insertValues;
+        try {
+            Statement statement = connectDB.createStatement();
+            statement.executeUpdate(insertToProva);
+            System.out.println("Prova registada com sucesso!");
+        } catch (Exception e) {
+            e.printStackTrace();
+            e.getCause();
+        }
+    }
+
+    public void registaEscalao(String provaID, String NomeEscalao, String Categoria, int idadeMin, int idadeMax) {
+        DBConnection connectNow = new DBConnection();
+        Connection connectDB = connectNow.getConnection();
+
+        String insertFields = "INSERT INTO Escalao(idProva, escalaoNome, categoria, idadeMin, idadeMax) VALUES ('";
+        String insertValues = provaID + "','" + NomeEscalao + "','" + Categoria + "'," + String.valueOf(idadeMin) + "," + String.valueOf(idadeMax) + ")";
+        String insertToEscalao = insertFields + insertValues;
+        try {
+            Statement statement = connectDB.createStatement();
+            statement.executeUpdate(insertToEscalao);
+            System.out.println("Escalão registado com sucesso!");
+        } catch (Exception e) {
+            e.printStackTrace();
+            e.getCause();
+        }
+    }
+
+    public boolean existeProvaRepetida(String ownerID, String NomeProva, String distanciaProva, String dataProva) {
+        DBConnection connectNow = new DBConnection();
+        Connection connectDB = connectNow.getConnection();
+        String verifyProvaRepetida = "SELECT count(1) FROM prova WHERE ownerID = '" + ownerID + "' AND nome = '" + NomeProva + "' AND distancia = '"+distanciaProva+"' AND dataRealizacao = '"+dataProva+"'";
+
+        boolean provaRepetida = false;
+
+        try {
+            Statement statement = connectDB.createStatement();
+            ResultSet queryResult = statement.executeQuery(verifyProvaRepetida);
+
+            while (queryResult.next()) {
+                if (queryResult.getInt(1) > 0) {
+                    provaRepetida = true;
+                }
+            }
+            queryResult.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+            e.getCause();
+        }
+
+        return provaRepetida;
     }
 }
