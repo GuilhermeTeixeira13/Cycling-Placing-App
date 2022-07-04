@@ -115,6 +115,9 @@ public class CriarProvaController implements Initializable {
 
     @FXML
     TableColumn<Escalao, Integer> distanciaColumn;
+    
+    @FXML
+    Label labelAvisos;
 
     ObservableList<Escalao> escaloes;
 
@@ -135,6 +138,8 @@ public class CriarProvaController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+        labelAvisos.setText("");
+        
         categoriasList.add("Masculinos");
         categoriasList.add("Femininos");
         categoriasList.add("Paraciclismo");
@@ -182,11 +187,16 @@ public class CriarProvaController implements Initializable {
 
     @FXML
     public void submitDistancia(ActionEvent event) {
-        Distancia d = new Distancia(Integer.parseInt(txtFieldDistancias.getText()));
-        distancias = tableViewDistancias.getItems();
-        distancias.add(d);
-        tableViewDistancias.setItems(distancias);
-        preencherComboBoxDistancias(distancias);
+        if (txtFieldDistancias.getText().equals("")) {
+            labelAvisos.setText("Preencha todos os campos!!");
+        }
+        else {
+            Distancia d = new Distancia(Integer.parseInt(txtFieldDistancias.getText()));
+            distancias = tableViewDistancias.getItems();
+            distancias.add(d);
+            tableViewDistancias.setItems(distancias);
+            preencherComboBoxDistancias(distancias);
+        }
     }
 
     @FXML
@@ -195,17 +205,22 @@ public class CriarProvaController implements Initializable {
         ObservableList distanciasSelecionadas = CheckComboBoxDistancia.getCheckModel().getCheckedItems();
 
         if (categoriasSelecionadas.isEmpty() || distanciasSelecionadas.isEmpty()) {
-            System.out.println("Preencha todos os campos!!");
+            labelAvisos.setText("Preencha todos os campos!!");
         } else {
             categoriasSelecionadas.forEach((Object categoria) -> {
-                distanciasSelecionadas.forEach((Object distancia) -> {
-                    String[] parts = distancia.toString().split(" ");
-                    Distancia d = new Distancia(Integer.parseInt(parts[0]));
-                    Escalao e;
-                    e = new Escalao(txtFieldEscalao.getText(), Integer.parseInt(txtFieldIdadeMin.getText()), Integer.parseInt(txtFieldIdadeMax.getText()), categoria.toString(), d);
-                    escaloes = tableViewEscaloes.getItems();
-                    escaloes.add(e);
-                    tableViewEscaloes.setItems(escaloes);
+                distanciasSelecionadas.forEach((Object distancia) -> {    
+                    if(idadesCertas(Integer.parseInt(txtFieldIdadeMin.getText()), Integer.parseInt(txtFieldIdadeMax.getText()))){
+                        String[] parts = distancia.toString().split(" ");
+                        Distancia d = new Distancia(Integer.parseInt(parts[0]));
+                        Escalao e;
+                        e = new Escalao(txtFieldEscalao.getText(), Integer.parseInt(txtFieldIdadeMin.getText()), Integer.parseInt(txtFieldIdadeMax.getText()), categoria.toString(), d);
+                        escaloes = tableViewEscaloes.getItems();
+                        escaloes.add(e);
+                        tableViewEscaloes.setItems(escaloes);
+                    }
+                    else{
+                        labelAvisos.setText("Verifique se a idade mínima é menor que a máxima.");
+                    }
                 });
             });
 
@@ -216,16 +231,26 @@ public class CriarProvaController implements Initializable {
     @FXML
     public void removeDistancia(ActionEvent event) {
         int selectedID = tableViewDistancias.getSelectionModel().getSelectedIndex();
-        tableViewDistancias.getItems().remove(selectedID);
-        System.out.println("Distâncias -> " + distancias.toString());
-        preencherComboBoxDistancias(distancias);
+        if(selectedID != -1){
+            tableViewDistancias.getItems().remove(selectedID);
+            System.out.println("Distâncias -> " + distancias.toString());
+            preencherComboBoxDistancias(distancias);
+        }
+        else{
+            labelAvisos.setText("Selecione um item da tabela para o conseguir remover.");
+        }
     }
 
     @FXML
     public void removeEscalao(ActionEvent event) {
         int selectedID = tableViewEscaloes.getSelectionModel().getSelectedIndex();
-        tableViewEscaloes.getItems().remove(selectedID);
-        System.out.println("Escalões -> " + escaloes.toString());
+        if(selectedID != -1){
+            tableViewEscaloes.getItems().remove(selectedID);
+            System.out.println("Escalões -> " + escaloes.toString());
+        }
+        else{
+            labelAvisos.setText("Selecione um item da tabela para o conseguir remover.");
+        }
     }
 
     public void preencherComboBoxDistancias(ObservableList<Distancia> distancias) {
@@ -268,21 +293,21 @@ public class CriarProvaController implements Initializable {
                 LocalDate dataProva = datePickerdataProva.getValue();
                 String distanciaProva = ALdistancias.get(i).getDist();
                 String[] distanciaPartes = distanciaProva.split(" ");
-                System.out.println("A dist é -> "+distanciaPartes[0]);
 
                 if (existeProvaRepetida(ownerID, NomeProva, distanciaProva, dataProva.toString())) {
-                    System.out.println("Você já criou uma prova com o mesmo nome e distância, para o mesmo dia!!!");
+                    labelAvisos.setText("Você já criou uma prova com o mesmo nome e distância, para o mesmo dia!!!");
                 } else {
                     registaProva(ownerID, NomeProva, dataProva.toString(), distanciaPartes[0]);
                     String provaID = getProvaID(ownerID, NomeProva, dataProva.toString(), distanciaPartes[0]);
                     for (int j = 0; j < ALescaloes.size(); j++) {
                         registaEscalao(provaID, ALescaloes.get(j).getNome(), ALescaloes.get(j).getCategoria(), ALescaloes.get(j).getIdadeMin(), ALescaloes.get(j).getIdadeMax());
                     }
+                    labelAvisos.setText("Prova criada com sucesso!");
                 }
             }
 
         } else {
-            System.out.println("Preencha todos os campos!!");
+            labelAvisos.setText("Preencha todos os campos!!");
         }
     }
 
@@ -387,5 +412,12 @@ public class CriarProvaController implements Initializable {
         }
 
         return provaRepetida;
+    }
+    
+    public boolean idadesCertas(int menor, int maior){
+        if(menor > maior)
+            return false;
+        else
+            return true;
     }
 }
