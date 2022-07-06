@@ -115,7 +115,7 @@ public class CriarProvaController implements Initializable {
 
     @FXML
     TableColumn<Escalao, Integer> distanciaColumn;
-    
+
     @FXML
     Label labelAvisos;
 
@@ -139,7 +139,7 @@ public class CriarProvaController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         labelAvisos.setText("");
-        
+
         categoriasList.add("Masculinos");
         categoriasList.add("Femininos");
         categoriasList.add("Paraciclismo");
@@ -189,8 +189,7 @@ public class CriarProvaController implements Initializable {
     public void submitDistancia(ActionEvent event) {
         if (txtFieldDistancias.getText().equals("")) {
             labelAvisos.setText("Preencha todos os campos!!");
-        }
-        else {
+        } else {
             Distancia d = new Distancia(Integer.parseInt(txtFieldDistancias.getText()));
             distancias = tableViewDistancias.getItems();
             distancias.add(d);
@@ -208,8 +207,8 @@ public class CriarProvaController implements Initializable {
             labelAvisos.setText("Preencha todos os campos!!");
         } else {
             categoriasSelecionadas.forEach((Object categoria) -> {
-                distanciasSelecionadas.forEach((Object distancia) -> {    
-                    if(idadesCertas(Integer.parseInt(txtFieldIdadeMin.getText()), Integer.parseInt(txtFieldIdadeMax.getText()))){
+                distanciasSelecionadas.forEach((Object distancia) -> {
+                    if (idadesCertas(Integer.parseInt(txtFieldIdadeMin.getText()), Integer.parseInt(txtFieldIdadeMax.getText()))) {
                         String[] parts = distancia.toString().split(" ");
                         Distancia d = new Distancia(Integer.parseInt(parts[0]));
                         Escalao e;
@@ -217,8 +216,7 @@ public class CriarProvaController implements Initializable {
                         escaloes = tableViewEscaloes.getItems();
                         escaloes.add(e);
                         tableViewEscaloes.setItems(escaloes);
-                    }
-                    else{
+                    } else {
                         labelAvisos.setText("Verifique se a idade mínima é menor que a máxima.");
                     }
                 });
@@ -231,12 +229,11 @@ public class CriarProvaController implements Initializable {
     @FXML
     public void removeDistancia(ActionEvent event) {
         int selectedID = tableViewDistancias.getSelectionModel().getSelectedIndex();
-        if(selectedID != -1){
+        if (selectedID != -1) {
             tableViewDistancias.getItems().remove(selectedID);
             System.out.println("Distâncias -> " + distancias.toString());
             preencherComboBoxDistancias(distancias);
-        }
-        else{
+        } else {
             labelAvisos.setText("Selecione um item da tabela para o conseguir remover.");
         }
     }
@@ -244,11 +241,10 @@ public class CriarProvaController implements Initializable {
     @FXML
     public void removeEscalao(ActionEvent event) {
         int selectedID = tableViewEscaloes.getSelectionModel().getSelectedIndex();
-        if(selectedID != -1){
+        if (selectedID != -1) {
             tableViewEscaloes.getItems().remove(selectedID);
             System.out.println("Escalões -> " + escaloes.toString());
-        }
-        else{
+        } else {
             labelAvisos.setText("Selecione um item da tabela para o conseguir remover.");
         }
     }
@@ -294,11 +290,11 @@ public class CriarProvaController implements Initializable {
                 String distanciaProva = ALdistancias.get(i).getDist();
                 String[] distanciaPartes = distanciaProva.split(" ");
 
-                if (existeProvaRepetida(ownerID, NomeProva, distanciaProva, dataProva.toString())) {
-                    labelAvisos.setText("Você já criou uma prova com o mesmo nome e distância, para o mesmo dia!!!");
+                if (existeProvaRepetida(ownerID, NomeProva)) {
+                    labelAvisos.setText("Você já criou uma prova com o mesmo nome!!!");
                 } else {
                     registaProva(ownerID, NomeProva, dataProva.toString(), distanciaPartes[0]);
-                    String provaID = getProvaID(ownerID, NomeProva, dataProva.toString(), distanciaPartes[0]);
+                    String provaID = getProvaID(ownerID, NomeProva);
                     for (int j = 0; j < ALescaloes.size(); j++) {
                         registaEscalao(provaID, ALescaloes.get(j).getNome(), ALescaloes.get(j).getCategoria(), ALescaloes.get(j).getIdadeMin(), ALescaloes.get(j).getIdadeMax());
                     }
@@ -309,6 +305,28 @@ public class CriarProvaController implements Initializable {
         } else {
             labelAvisos.setText("Preencha todos os campos!!");
         }
+    }
+    
+    public String getProvaID(String ownerID, String NomeProva) {
+        String provaID = "";
+
+        DBConnection connectNow = new DBConnection();
+        Connection connectDB = connectNow.getConnection();
+
+        String getProvaID = "SELECT id FROM Prova WHERE ownerID = '" + ownerID + "' AND nome = '" + NomeProva +"'";
+        try {
+            Statement statement = connectDB.createStatement();
+            ResultSet queryResultgetProvaID = statement.executeQuery(getProvaID);
+            while (queryResultgetProvaID.next()) {
+                provaID = queryResultgetProvaID.getString("id");
+            }
+            queryResultgetProvaID.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+            e.getCause();
+        }
+
+        return provaID;
     }
 
     public String getOwnerID() {
@@ -331,28 +349,6 @@ public class CriarProvaController implements Initializable {
         }
 
         return ownerID;
-    }
-
-    public String getProvaID(String ownerID, String NomeProva, String DataProva, String distanciaProva) {
-        String provaID = "";
-
-        DBConnection connectNow = new DBConnection();
-        Connection connectDB = connectNow.getConnection();
-
-        String getProvaID = "SELECT id FROM Prova WHERE ownerID = '" + ownerID + "' AND nome = '" + NomeProva + "' AND distancia = '"+distanciaProva+"' AND dataRealizacao = '"+DataProva+"'";
-        try {
-            Statement statement = connectDB.createStatement();
-            ResultSet queryResultgetProvaID = statement.executeQuery(getProvaID);
-            while (queryResultgetProvaID.next()) {
-                provaID = queryResultgetProvaID.getString("id");
-            }
-            queryResultgetProvaID.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-            e.getCause();
-        }
-
-        return provaID;
     }
 
     public void registaProva(String ownerID, String NomeProva, String DataProva, String distanciaProva) {
@@ -388,11 +384,11 @@ public class CriarProvaController implements Initializable {
             e.getCause();
         }
     }
-
-    public boolean existeProvaRepetida(String ownerID, String NomeProva, String distanciaProva, String dataProva) {
+    
+    public boolean existeProvaRepetida(String ownerID, String NomeProva) {
         DBConnection connectNow = new DBConnection();
         Connection connectDB = connectNow.getConnection();
-        String verifyProvaRepetida = "SELECT count(1) FROM prova WHERE ownerID = '" + ownerID + "' AND nome = '" + NomeProva + "' AND distancia = '"+distanciaProva+"' AND dataRealizacao = '"+dataProva+"'";
+        String verifyProvaRepetida = "SELECT count(1) FROM prova WHERE ownerID = '" + ownerID + "' AND nome = '" + NomeProva + "'";
 
         boolean provaRepetida = false;
 
@@ -413,11 +409,12 @@ public class CriarProvaController implements Initializable {
 
         return provaRepetida;
     }
-    
-    public boolean idadesCertas(int menor, int maior){
-        if(menor > maior)
+
+    public boolean idadesCertas(int menor, int maior) {
+        if (menor > maior) {
             return false;
-        else
+        } else {
             return true;
+        }
     }
 }

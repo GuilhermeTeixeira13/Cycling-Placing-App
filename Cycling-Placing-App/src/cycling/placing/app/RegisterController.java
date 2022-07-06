@@ -1,5 +1,3 @@
-package cycling.placing.app;
-
 import cycling.placing.app.DBTables.DBConnection;
 import java.io.IOException;
 import java.net.URL;

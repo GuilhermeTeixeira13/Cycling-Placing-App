@@ -1,7 +1,12 @@
 package cycling.placing.app;
 
+import cycling.placing.app.DBTables.DBConnection;
 import java.io.IOException;
 import java.net.URL;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -36,9 +41,14 @@ public class SelectProvaController implements Initializable {
 
     @FXML
     Button btnNovaProva3;
+    
+    @FXML
+    Button[] arrayButtons;
 
     @FXML
     Label LabelUsername;
+    
+    ArrayList<String> provasCriadas = new ArrayList<String>();
 
     private Stage stage;
     private Scene scene;
@@ -55,7 +65,34 @@ public class SelectProvaController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+        inicializeButtonArray();
+        
+        for(int i=0; i<arrayButtons.length; i++){
+            Button but = arrayButtons[i];
+            but.setText("Nova Prova");
+        }
+        
         LabelUsername.setText("Provas de " + this.username + ":");
+        
+        String ownerId = getOwnerID();
+        
+        int numProvas = contaProvasUser(ownerId);
+        System.out.println("O número de provas de "+ownerId+" é "+numProvas+".");
+        
+        provasCriadas = nomeProvasCriadas(ownerId);
+        System.out.println(provasCriadas);
+        
+        for(int i=0; i<provasCriadas.size(); i++){
+            Button but = arrayButtons[i];
+            but.setText(provasCriadas.get(i));
+        }
+    }
+    
+    public void inicializeButtonArray() {
+        arrayButtons = new Button[3];
+        arrayButtons[0] = btnNovaProva1;
+        arrayButtons[1] = btnNovaProva2;
+        arrayButtons[2] = btnNovaProva3;
     }
 
     public void NovaProvaButtonAction(ActionEvent event) throws IOException {
@@ -109,5 +146,128 @@ public class SelectProvaController implements Initializable {
     public void minimizeClicked(MouseEvent event) {
         Stage stage = (Stage) minimizeLogo.getScene().getWindow();
         stage.setIconified(true);
+    }
+    
+    @FXML
+    public void eliminaProva1(MouseEvent event) {
+        eliminaEscalao(getOwnerID(), provasCriadas.get(0));
+        eliminaProvaPorNome(getOwnerID(), provasCriadas.get(0));
+        
+        btnNovaProva1.setText("Nova Prova");
+    }
+    
+    @FXML
+    public void eliminaProva2(MouseEvent event) {
+        eliminaEscalao(getOwnerID(), provasCriadas.get(1));
+        eliminaProvaPorNome(getOwnerID(), provasCriadas.get(1));
+        
+        btnNovaProva2.setText("Nova Prova");
+    }
+    
+    @FXML
+    public void eliminaProva3(MouseEvent event) {
+        eliminaEscalao(getOwnerID(), provasCriadas.get(2));
+        eliminaProvaPorNome(getOwnerID(), provasCriadas.get(2));
+        
+        btnNovaProva3.setText("Nova Prova");
+    }
+    
+    
+    public void eliminaProvaPorNome(String ownerID, String NomeProva) {
+        DBConnection connectNow = new DBConnection();
+        Connection connectDB = connectNow.getConnection();
+
+        String deleteProva = "DELETE FROM Prova WHERE ownerID = '" + ownerID + "' AND nome = '" + NomeProva + "'";
+        try {
+            Statement statement = connectDB.createStatement();
+            statement.executeUpdate(deleteProva);
+        } catch (Exception e) {
+            e.printStackTrace();
+            e.getCause();
+        }
+
+    }
+        
+    public void eliminaEscalao(String ownerID, String NomeProva) {
+        DBConnection connectNow = new DBConnection();
+        Connection connectDB = connectNow.getConnection();
+
+        String selectProva = "SELECT id FROM Prova WHERE ownerID = '" + ownerID + "' AND nome = '" + NomeProva + "'";
+        String deleteEscalao = "DELETE FROM Escalao WHERE idProva IN (" + selectProva + ")";
+        try {
+            Statement statement = connectDB.createStatement();
+            statement.executeUpdate(deleteEscalao);
+        } catch (Exception e) {
+            e.printStackTrace();
+            e.getCause();
+        }
+    }
+    
+    public int contaProvasUser(String ownerID) {
+        DBConnection connectNow = new DBConnection();
+        Connection connectDB = connectNow.getConnection();
+        String verifyProvaRepetida = "SELECT count(*) FROM prova WHERE ownerID = '" + ownerID + "' GROUP BY nome";
+
+        int numProvas = 0;
+
+        try {
+            Statement statement = connectDB.createStatement();
+            ResultSet queryResult = statement.executeQuery(verifyProvaRepetida);
+
+            while (queryResult.next()) {
+                numProvas++;
+            }
+            queryResult.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+            e.getCause();
+        }
+
+        return numProvas;
+    }
+    
+    public ArrayList<String> nomeProvasCriadas(String ownerID) {
+        ArrayList<String> provasCriadas = new ArrayList<String>();
+        
+        DBConnection connectNow = new DBConnection();
+        Connection connectDB = connectNow.getConnection();
+        String verifyProvaRepetida = "SELECT nome FROM prova WHERE ownerID = '" + ownerID + "' GROUP BY nome";
+
+        try {
+            Statement statement = connectDB.createStatement();
+            ResultSet queryResult = statement.executeQuery(verifyProvaRepetida);
+
+            while (queryResult.next()) {
+                provasCriadas.add(queryResult.getString("nome"));
+            }
+            queryResult.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+            e.getCause();
+        }
+
+        return provasCriadas;
+    }
+    
+    public String getOwnerID() {
+        String ownerID = "";
+
+        DBConnection connectNow = new DBConnection();
+        Connection connectDB = connectNow.getConnection();
+
+        String getUserID = "SELECT id FROM utilizadores WHERE username = '" + this.username + "'";
+        try {
+            Statement statement = connectDB.createStatement();
+            ResultSet queryResultgetUserID = statement.executeQuery(getUserID);
+            while (queryResultgetUserID.next()) {
+                ownerID = queryResultgetUserID.getString("id");
+            }
+            queryResultgetUserID.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+            e.getCause();
+        }
+
+        return ownerID;
     }
 }
