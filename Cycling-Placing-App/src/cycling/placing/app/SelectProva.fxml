@@ -54,7 +54,7 @@
                   <Image url="@images/trash.png" />
                </image>
             </ImageView>
-            <ImageView fitHeight="31.0" fitWidth="34.0" layoutX="268.0" layoutY="288.0" onContextMenuRequested="#eliminaProva3" pickOnBounds="true" preserveRatio="true">
+            <ImageView fitHeight="31.0" fitWidth="34.0" layoutX="268.0" layoutY="288.0" onMouseClicked="#eliminaProva3" pickOnBounds="true" preserveRatio="true">
                <image>
                   <Image url="@images/trash.png" />
                </image>

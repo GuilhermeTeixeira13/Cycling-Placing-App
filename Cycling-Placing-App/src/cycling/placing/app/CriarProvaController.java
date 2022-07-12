@@ -282,38 +282,40 @@ public class CriarProvaController implements Initializable {
         if (distancias != null && escaloes != null) {
             ArrayList<Escalao> ALescaloes = new ArrayList<Escalao>(escaloes);
             ArrayList<Distancia> ALdistancias = new ArrayList<Distancia>(distancias);
+            String ownerID = getOwnerID();
+            String NomeProva = txtFieldNomeProva.getText();
 
-            for (int i = 0; i < ALdistancias.size(); i++) {
-                String ownerID = getOwnerID();
-                String NomeProva = txtFieldNomeProva.getText();
+            if (existeProvaRepetida(ownerID, NomeProva)) {
+                System.out.println("Existe Prova Repetida!");
+                labelAvisos.setText("Você já criou uma prova com o mesmo nome!!!");
+            }else{
+                for (int i = 0; i < ALdistancias.size(); i++) {
+
                 LocalDate dataProva = datePickerdataProva.getValue();
                 String distanciaProva = ALdistancias.get(i).getDist();
                 String[] distanciaPartes = distanciaProva.split(" ");
 
-                if (existeProvaRepetida(ownerID, NomeProva)) {
-                    labelAvisos.setText("Você já criou uma prova com o mesmo nome!!!");
-                } else {
-                    registaProva(ownerID, NomeProva, dataProva.toString(), distanciaPartes[0]);
-                    String provaID = getProvaID(ownerID, NomeProva);
-                    for (int j = 0; j < ALescaloes.size(); j++) {
-                        registaEscalao(provaID, ALescaloes.get(j).getNome(), ALescaloes.get(j).getCategoria(), ALescaloes.get(j).getIdadeMin(), ALescaloes.get(j).getIdadeMax());
-                    }
-                    labelAvisos.setText("Prova criada com sucesso!");
+                registaProva(ownerID, NomeProva, dataProva.toString(), distanciaPartes[0]);
+                String provaID = getProvaID(ownerID, NomeProva);
+                for (int j = 0; j < ALescaloes.size(); j++) {
+                    registaEscalao(provaID, ALescaloes.get(j).getNome(), ALescaloes.get(j).getCategoria(), ALescaloes.get(j).getIdadeMin(), ALescaloes.get(j).getIdadeMax());
                 }
+                System.out.println("Gravou Prova");
+                labelAvisos.setText("Prova criada com sucesso!");
             }
-
+            }
         } else {
             labelAvisos.setText("Preencha todos os campos!!");
         }
     }
-    
+
     public String getProvaID(String ownerID, String NomeProva) {
         String provaID = "";
 
         DBConnection connectNow = new DBConnection();
         Connection connectDB = connectNow.getConnection();
 
-        String getProvaID = "SELECT id FROM Prova WHERE ownerID = '" + ownerID + "' AND nome = '" + NomeProva +"'";
+        String getProvaID = "SELECT id FROM Prova WHERE ownerID = '" + ownerID + "' AND nome = '" + NomeProva + "'";
         try {
             Statement statement = connectDB.createStatement();
             ResultSet queryResultgetProvaID = statement.executeQuery(getProvaID);
@@ -384,7 +386,7 @@ public class CriarProvaController implements Initializable {
             e.getCause();
         }
     }
-    
+
     public boolean existeProvaRepetida(String ownerID, String NomeProva) {
         DBConnection connectNow = new DBConnection();
         Connection connectDB = connectNow.getConnection();

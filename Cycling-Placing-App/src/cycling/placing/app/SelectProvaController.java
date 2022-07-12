@@ -150,26 +150,72 @@ public class SelectProvaController implements Initializable {
     
     @FXML
     public void eliminaProva1(MouseEvent event) {
-        eliminaEscalao(getOwnerID(), provasCriadas.get(0));
-        eliminaProvaPorNome(getOwnerID(), provasCriadas.get(0));
+        String nomeProva = btnNovaProva1.getText();
         
-        btnNovaProva1.setText("Nova Prova");
+        if(!nomeProva.equals("Nova Prova")){
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle("DELETE!");
+            alert.setHeaderText("Está prestes a eliminar a prova "+nomeProva+".");
+            alert.setContentText("Tem a certeza que quer eliminar "+nomeProva+"?");
+            if (alert.showAndWait().get() == ButtonType.OK) {
+                eliminaEscalao(getOwnerID(), provasCriadas.get(0));
+                eliminaProvaPorNome(getOwnerID(), provasCriadas.get(0));    
+                btnNovaProva1.setText("Nova Prova");
+            }
+        }
+        else{
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("ERROR!");
+            alert.setHeaderText("Não é possível eliminar uma prova que ainda não existe.");
+            alert.showAndWait();
+        }
+        
     }
     
     @FXML
-    public void eliminaProva2(MouseEvent event) {
-        eliminaEscalao(getOwnerID(), provasCriadas.get(1));
-        eliminaProvaPorNome(getOwnerID(), provasCriadas.get(1));
+    public void eliminaProva2(MouseEvent event) { 
+        String nomeProva = btnNovaProva2.getText();
         
-        btnNovaProva2.setText("Nova Prova");
+        if(!nomeProva.equals("Nova Prova")){
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle("DELETE!");
+            alert.setHeaderText("Está prestes a eliminar a prova '"+nomeProva+"'.");
+            alert.setContentText("Tem a certeza que quer eliminar '"+nomeProva+"'?");
+            if (alert.showAndWait().get() == ButtonType.OK) {
+                eliminaEscalao(getOwnerID(), provasCriadas.get(1));
+                eliminaProvaPorNome(getOwnerID(), provasCriadas.get(1));    
+                btnNovaProva2.setText("Nova Prova");
+            }
+        }
+        else{
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("ERROR!");
+            alert.setHeaderText("Não é possível eliminar uma prova que ainda não existe.");
+            alert.showAndWait();
+        }
     }
     
     @FXML
-    public void eliminaProva3(MouseEvent event) {
-        eliminaEscalao(getOwnerID(), provasCriadas.get(2));
-        eliminaProvaPorNome(getOwnerID(), provasCriadas.get(2));
+    public void eliminaProva3(MouseEvent event) { 
+        String nomeProva = btnNovaProva3.getText();
         
-        btnNovaProva3.setText("Nova Prova");
+        if(!nomeProva.equals("Nova Prova")){
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle("DELETE!");
+            alert.setHeaderText("Está prestes a eliminar a prova '"+nomeProva+"'.");
+            alert.setContentText("Tem a certeza que quer eliminar '"+nomeProva+"'?");
+            if (alert.showAndWait().get() == ButtonType.OK) {
+                eliminaEscalao(getOwnerID(), provasCriadas.get(2));
+                eliminaProvaPorNome(getOwnerID(), provasCriadas.get(2));    
+                btnNovaProva3.setText("Nova Prova");
+            }
+        }
+        else{
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("ERROR!");
+            alert.setHeaderText("Não é possível eliminar uma prova que ainda não existe.");
+            alert.showAndWait();
+        }
     }
     
     
