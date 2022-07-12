@@ -41,13 +41,13 @@ public class SelectProvaController implements Initializable {
 
     @FXML
     Button btnNovaProva3;
-    
+
     @FXML
     Button[] arrayButtons;
 
     @FXML
     Label LabelUsername;
-    
+
     ArrayList<String> provasCriadas = new ArrayList<String>();
 
     private Stage stage;
@@ -66,28 +66,28 @@ public class SelectProvaController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         inicializeButtonArray();
-        
-        for(int i=0; i<arrayButtons.length; i++){
+
+        for (int i = 0; i < arrayButtons.length; i++) {
             Button but = arrayButtons[i];
             but.setText("Nova Prova");
         }
-        
+
         LabelUsername.setText("Provas de " + this.username + ":");
-        
+
         String ownerId = getOwnerID();
-        
+
         int numProvas = contaProvasUser(ownerId);
-        System.out.println("O número de provas de "+ownerId+" é "+numProvas+".");
-        
+        System.out.println("O número de provas de " + ownerId + " é " + numProvas + ".");
+
         provasCriadas = nomeProvasCriadas(ownerId);
         System.out.println(provasCriadas);
-        
-        for(int i=0; i<provasCriadas.size(); i++){
+
+        for (int i = 0; i < provasCriadas.size(); i++) {
             Button but = arrayButtons[i];
             but.setText(provasCriadas.get(i));
         }
     }
-    
+
     public void inicializeButtonArray() {
         arrayButtons = new Button[3];
         arrayButtons[0] = btnNovaProva1;
@@ -125,7 +125,32 @@ public class SelectProvaController implements Initializable {
             stage.setScene(scene);
             stage.show();
         } else {
+            ProvaController provaController = new ProvaController(btnString);
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("Prova.fxml"));
+            loader.setController(provaController);
+            Parent root = loader.load();
 
+            stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            scene = new Scene(root);
+
+            root.setOnMousePressed(new EventHandler<MouseEvent>() {
+                @Override
+                public void handle(MouseEvent event) {
+                    xOffset = event.getSceneX();
+                    yOffset = event.getSceneY();
+                }
+            });
+
+            root.setOnMouseDragged(new EventHandler<MouseEvent>() {
+                @Override
+                public void handle(MouseEvent event) {
+                    stage.setX(event.getScreenX() - xOffset);
+                    stage.setY(event.getScreenY() - yOffset);
+                }
+            });
+
+            stage.setScene(scene);
+            stage.show();
         }
     }
 
@@ -147,78 +172,74 @@ public class SelectProvaController implements Initializable {
         Stage stage = (Stage) minimizeLogo.getScene().getWindow();
         stage.setIconified(true);
     }
-    
+
     @FXML
     public void eliminaProva1(MouseEvent event) {
         String nomeProva = btnNovaProva1.getText();
-        
-        if(!nomeProva.equals("Nova Prova")){
+
+        if (!nomeProva.equals("Nova Prova")) {
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
             alert.setTitle("DELETE!");
-            alert.setHeaderText("Está prestes a eliminar a prova "+nomeProva+".");
-            alert.setContentText("Tem a certeza que quer eliminar "+nomeProva+"?");
+            alert.setHeaderText("Está prestes a eliminar a prova " + nomeProva + ".");
+            alert.setContentText("Tem a certeza que quer eliminar " + nomeProva + "?");
             if (alert.showAndWait().get() == ButtonType.OK) {
                 eliminaEscalao(getOwnerID(), provasCriadas.get(0));
-                eliminaProvaPorNome(getOwnerID(), provasCriadas.get(0));    
+                eliminaProvaPorNome(getOwnerID(), provasCriadas.get(0));
                 btnNovaProva1.setText("Nova Prova");
             }
-        }
-        else{
+        } else {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("ERROR!");
             alert.setHeaderText("Não é possível eliminar uma prova que ainda não existe.");
             alert.showAndWait();
         }
-        
+
     }
-    
+
     @FXML
-    public void eliminaProva2(MouseEvent event) { 
+    public void eliminaProva2(MouseEvent event) {
         String nomeProva = btnNovaProva2.getText();
-        
-        if(!nomeProva.equals("Nova Prova")){
+
+        if (!nomeProva.equals("Nova Prova")) {
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
             alert.setTitle("DELETE!");
-            alert.setHeaderText("Está prestes a eliminar a prova '"+nomeProva+"'.");
-            alert.setContentText("Tem a certeza que quer eliminar '"+nomeProva+"'?");
+            alert.setHeaderText("Está prestes a eliminar a prova '" + nomeProva + "'.");
+            alert.setContentText("Tem a certeza que quer eliminar '" + nomeProva + "'?");
             if (alert.showAndWait().get() == ButtonType.OK) {
                 eliminaEscalao(getOwnerID(), provasCriadas.get(1));
-                eliminaProvaPorNome(getOwnerID(), provasCriadas.get(1));    
+                eliminaProvaPorNome(getOwnerID(), provasCriadas.get(1));
                 btnNovaProva2.setText("Nova Prova");
             }
-        }
-        else{
+        } else {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("ERROR!");
             alert.setHeaderText("Não é possível eliminar uma prova que ainda não existe.");
             alert.showAndWait();
         }
     }
-    
+
     @FXML
-    public void eliminaProva3(MouseEvent event) { 
+    public void eliminaProva3(MouseEvent event) {
         String nomeProva = btnNovaProva3.getText();
-        
-        if(!nomeProva.equals("Nova Prova")){
+
+        if (!nomeProva.equals("Nova Prova")) {
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
             alert.setTitle("DELETE!");
-            alert.setHeaderText("Está prestes a eliminar a prova '"+nomeProva+"'.");
-            alert.setContentText("Tem a certeza que quer eliminar '"+nomeProva+"'?");
+            alert.setHeaderText("Está prestes a eliminar a prova '" + nomeProva + "'.");
+            alert.setContentText("Tem a certeza que quer eliminar '" + nomeProva + "'?");
             if (alert.showAndWait().get() == ButtonType.OK) {
                 eliminaEscalao(getOwnerID(), provasCriadas.get(2));
-                eliminaProvaPorNome(getOwnerID(), provasCriadas.get(2));    
+                eliminaProvaPorNome(getOwnerID(), provasCriadas.get(2));
                 btnNovaProva3.setText("Nova Prova");
             }
-        }
-        else{
+        } else {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("ERROR!");
             alert.setHeaderText("Não é possível eliminar uma prova que ainda não existe.");
             alert.showAndWait();
         }
     }
-    
-    
+
     public void eliminaProvaPorNome(String ownerID, String NomeProva) {
         DBConnection connectNow = new DBConnection();
         Connection connectDB = connectNow.getConnection();
@@ -233,7 +254,7 @@ public class SelectProvaController implements Initializable {
         }
 
     }
-        
+
     public void eliminaEscalao(String ownerID, String NomeProva) {
         DBConnection connectNow = new DBConnection();
         Connection connectDB = connectNow.getConnection();
@@ -248,7 +269,7 @@ public class SelectProvaController implements Initializable {
             e.getCause();
         }
     }
-    
+
     public int contaProvasUser(String ownerID) {
         DBConnection connectNow = new DBConnection();
         Connection connectDB = connectNow.getConnection();
@@ -271,10 +292,10 @@ public class SelectProvaController implements Initializable {
 
         return numProvas;
     }
-    
+
     public ArrayList<String> nomeProvasCriadas(String ownerID) {
         ArrayList<String> provasCriadas = new ArrayList<String>();
-        
+
         DBConnection connectNow = new DBConnection();
         Connection connectDB = connectNow.getConnection();
         String verifyProvaRepetida = "SELECT nome FROM prova WHERE ownerID = '" + ownerID + "' GROUP BY nome";
@@ -294,7 +315,7 @@ public class SelectProvaController implements Initializable {
 
         return provasCriadas;
     }
-    
+
     public String getOwnerID() {
         String ownerID = "";
 

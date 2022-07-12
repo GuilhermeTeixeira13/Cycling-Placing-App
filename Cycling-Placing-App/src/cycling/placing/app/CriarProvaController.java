@@ -278,7 +278,7 @@ public class CriarProvaController implements Initializable {
     }
 
     @FXML
-    public void gravarProva(ActionEvent event) {
+    public void gravarProva(ActionEvent event) throws IOException {
         if (distancias != null && escaloes != null) {
             ArrayList<Escalao> ALescaloes = new ArrayList<Escalao>(escaloes);
             ArrayList<Distancia> ALdistancias = new ArrayList<Distancia>(distancias);
@@ -288,21 +288,47 @@ public class CriarProvaController implements Initializable {
             if (existeProvaRepetida(ownerID, NomeProva)) {
                 System.out.println("Existe Prova Repetida!");
                 labelAvisos.setText("Você já criou uma prova com o mesmo nome!!!");
-            }else{
+            } else {
                 for (int i = 0; i < ALdistancias.size(); i++) {
+                    LocalDate dataProva = datePickerdataProva.getValue();
+                    String distanciaProva = ALdistancias.get(i).getDist();
+                    String[] distanciaPartes = distanciaProva.split(" ");
 
-                LocalDate dataProva = datePickerdataProva.getValue();
-                String distanciaProva = ALdistancias.get(i).getDist();
-                String[] distanciaPartes = distanciaProva.split(" ");
+                    registaProva(ownerID, NomeProva, dataProva.toString(), distanciaPartes[0]);
+                    String provaID = getProvaID(ownerID, NomeProva);
+                    for (int j = 0; j < ALescaloes.size(); j++) {
+                        registaEscalao(provaID, ALescaloes.get(j).getNome(), ALescaloes.get(j).getCategoria(), ALescaloes.get(j).getIdadeMin(), ALescaloes.get(j).getIdadeMax());
+                    }
 
-                registaProva(ownerID, NomeProva, dataProva.toString(), distanciaPartes[0]);
-                String provaID = getProvaID(ownerID, NomeProva);
-                for (int j = 0; j < ALescaloes.size(); j++) {
-                    registaEscalao(provaID, ALescaloes.get(j).getNome(), ALescaloes.get(j).getCategoria(), ALescaloes.get(j).getIdadeMin(), ALescaloes.get(j).getIdadeMax());
+                    System.out.println("Gravou Prova");
                 }
-                System.out.println("Gravou Prova");
-                labelAvisos.setText("Prova criada com sucesso!");
-            }
+
+                ProvaController provaController = new ProvaController(NomeProva);
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("Prova.fxml"));
+                loader.setController(provaController);
+                Parent root = loader.load();
+
+                stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+                scene = new Scene(root);
+
+                root.setOnMousePressed(new EventHandler<MouseEvent>() {
+                    @Override
+                    public void handle(MouseEvent event) {
+                        xOffset = event.getSceneX();
+                        yOffset = event.getSceneY();
+                    }
+                });
+
+                root.setOnMouseDragged(new EventHandler<MouseEvent>() {
+                    @Override
+                    public void handle(MouseEvent event) {
+                        stage.setX(event.getScreenX() - xOffset);
+                        stage.setY(event.getScreenY() - yOffset);
+                    }
+                });
+
+                stage.setScene(scene);
+                stage.show();
             }
         } else {
             labelAvisos.setText("Preencha todos os campos!!");
