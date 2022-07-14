@@ -125,7 +125,7 @@ public class SelectProvaController implements Initializable {
             stage.setScene(scene);
             stage.show();
         } else {
-            ProvaController provaController = new ProvaController(btnString);
+            ProvaController provaController = new ProvaController(btnString, getOwnerID());
             FXMLLoader loader = new FXMLLoader(getClass().getResource("Prova.fxml"));
             loader.setController(provaController);
             Parent root = loader.load();

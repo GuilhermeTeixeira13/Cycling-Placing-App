@@ -142,8 +142,10 @@ public class CriarProvaController implements Initializable {
 
         categoriasList.add("Masculinos");
         categoriasList.add("Femininos");
-        categoriasList.add("Paraciclismo");
-        categoriasList.add("E-BIKE");
+        categoriasList.add("Paraciclismo Feminino");
+        categoriasList.add("Paraciclismo Masculino");
+        categoriasList.add("E-BIKE Feminino");
+        categoriasList.add("E-BIKE Masculino");
         CheckComboBoxCategoria.getItems().setAll(categoriasList);
 
         txtFieldDistancias.textProperty().addListener(new ChangeListener<String>() {
@@ -295,15 +297,17 @@ public class CriarProvaController implements Initializable {
                     String[] distanciaPartes = distanciaProva.split(" ");
 
                     registaProva(ownerID, NomeProva, dataProva.toString(), distanciaPartes[0]);
-                    String provaID = getProvaID(ownerID, NomeProva);
+                    String provaID = getProvaID(ownerID, NomeProva, distanciaPartes[0]);
                     for (int j = 0; j < ALescaloes.size(); j++) {
-                        registaEscalao(provaID, ALescaloes.get(j).getNome(), ALescaloes.get(j).getCategoria(), ALescaloes.get(j).getIdadeMin(), ALescaloes.get(j).getIdadeMax());
+                        if(distanciaPartes[0].equals(ALescaloes.get(j).getDist().toString())){
+                            registaEscalao(provaID, ALescaloes.get(j).getNome(), ALescaloes.get(j).getCategoria(), ALescaloes.get(j).getIdadeMin(), ALescaloes.get(j).getIdadeMax());
+                        }       
                     }
 
                     System.out.println("Gravou Prova");
                 }
 
-                ProvaController provaController = new ProvaController(NomeProva);
+                ProvaController provaController = new ProvaController(NomeProva, getOwnerID());
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("Prova.fxml"));
                 loader.setController(provaController);
                 Parent root = loader.load();
@@ -335,13 +339,13 @@ public class CriarProvaController implements Initializable {
         }
     }
 
-    public String getProvaID(String ownerID, String NomeProva) {
+    public String getProvaID(String ownerID, String NomeProva, String Distancia) {
         String provaID = "";
 
         DBConnection connectNow = new DBConnection();
         Connection connectDB = connectNow.getConnection();
 
-        String getProvaID = "SELECT id FROM Prova WHERE ownerID = '" + ownerID + "' AND nome = '" + NomeProva + "'";
+        String getProvaID = "SELECT id FROM Prova WHERE ownerID = '" + ownerID + "' AND nome = '" + NomeProva + "' AND distancia = "+Distancia;
         try {
             Statement statement = connectDB.createStatement();
             ResultSet queryResultgetProvaID = statement.executeQuery(getProvaID);

@@ -53,9 +53,11 @@ public class ProvaController implements Initializable {
     private double yOffset = 0;
 
     String nomeProva;
+    String OwnerID;
 
-    public ProvaController(String nomeProva) {
+    public ProvaController(String nomeProva, String OwnerID) {
         this.nomeProva = nomeProva;
+        this.OwnerID = OwnerID;
     }
 
     @Override
@@ -80,5 +82,35 @@ public class ProvaController implements Initializable {
     public void minimizeClicked(MouseEvent event) {
         Stage stage = (Stage) minimizeLogo.getScene().getWindow();
         stage.setIconified(true);
+    }
+
+    @FXML
+    public void InscreverCiclistaButton(ActionEvent event) throws IOException {
+        InscreveCiclistaController inscreveCiclistaController = new InscreveCiclistaController(this.nomeProva, this.OwnerID);
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("Inscrever.fxml"));
+        loader.setController(inscreveCiclistaController);
+        Parent root = loader.load();
+
+        stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        scene = new Scene(root);
+
+        root.setOnMousePressed(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                xOffset = event.getSceneX();
+                yOffset = event.getSceneY();
+            }
+        });
+
+        root.setOnMouseDragged(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                stage.setX(event.getScreenX() - xOffset);
+                stage.setY(event.getScreenY() - yOffset);
+            }
+        });
+
+        stage.setScene(scene);
+        stage.show();
     }
 }
