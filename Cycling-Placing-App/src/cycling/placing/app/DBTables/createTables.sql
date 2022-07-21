@@ -22,7 +22,7 @@ CREATE TABLE `Participacao` (
   `idCiclista` INT(11) NOT NULL,
   `idProva` INT(11) NOT NULL,
   `tempoProva` TIME NULL,
-  `escalaoNome` varchar(255) NOT NULL, 
+  `idEscalao` INT(11) NOT NULL,
   `dorsal` INT UNSIGNED NULL,
   `modified` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );

@@ -8,6 +8,13 @@ public class Escalao {
     private int idadeMax;
     private String categoria;
     private Distancia dist;
+    
+    public Escalao() {
+        this.nome = "";
+        this.idadeMin = 0;
+        this.idadeMax = 0;
+        this.categoria = "";
+    }
 
     public Escalao(String nome, int idadeMin, int idadeMax, String categoria) {
         this.nome = nome;

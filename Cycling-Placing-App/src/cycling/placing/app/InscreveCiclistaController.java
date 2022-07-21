@@ -66,6 +66,8 @@ public class InscreveCiclistaController implements Initializable {
     
     String nomeProva;
     
+    Escalao escalaoInscrito;
+    
     String OwnerID;
     
     ArrayList<String> categoriasList = new ArrayList<String>();
@@ -106,8 +108,10 @@ public class InscreveCiclistaController implements Initializable {
                 String dist = choiceBoxDistancias.getValue();      
                 int idade = calculaIdadeNoDiaDaProva(dataNascimento, dataProva);
         
-                if(dataNascimento != null && categoria != null && dist != null)
-                    labelEscalao.setText("Escalão: "+ descobreEscalaoPelaIdade(prova.get(0).getId(), String.valueOf(idade), categoria).getNome());
+                if(dataNascimento != null && categoria != null && dist != null){
+                    escalaoInscrito = descobreEscalaoPelaIdade(prova.get(0).getId(), String.valueOf(idade), categoria);
+                    labelEscalao.setText("Escalão: "+ escalaoInscrito.getNome());
+                }  
             }
         });
         
@@ -119,8 +123,10 @@ public class InscreveCiclistaController implements Initializable {
                 String dist = choiceBoxDistancias.getValue();      
                 int idade = calculaIdadeNoDiaDaProva(dataNascimento, dataProva);
                 
-                if(dataNascimento != null && categoria != null && dist != null)
-                    labelEscalao.setText("Escalão: "+ descobreEscalaoPelaIdade(prova.get(0).getId(), String.valueOf(idade), categoria).getNome());
+                if(dataNascimento != null && categoria != null && dist != null){
+                    escalaoInscrito = descobreEscalaoPelaIdade(prova.get(0).getId(), String.valueOf(idade), categoria);
+                    labelEscalao.setText("Escalão: "+ escalaoInscrito.getNome());
+                }   
             }
         });
         
@@ -132,8 +138,10 @@ public class InscreveCiclistaController implements Initializable {
                 String dist = choiceBoxDistancias.getValue();      
                 int idade = calculaIdadeNoDiaDaProva(dataNascimento, dataProva);
                 
-                if(dataNascimento != null && categoria != null && dist != null)
-                    labelEscalao.setText("Escalão: "+ descobreEscalaoPelaIdade(prova.get(0).getId(), String.valueOf(idade), categoria).getNome());
+                if(dataNascimento != null && categoria != null && dist != null){
+                    escalaoInscrito = descobreEscalaoPelaIdade(prova.get(0).getId(), String.valueOf(idade), categoria);
+                    labelEscalao.setText("Escalão: "+ escalaoInscrito.getNome());
+                }        
             }
         });
     }
@@ -221,9 +229,15 @@ public class InscreveCiclistaController implements Initializable {
             e.getCause();
         }
 
-        Escalao e = new Escalao(Nome, Integer.parseInt(IdadeMinima), Integer.parseInt(IdadeMaxima), Categoria);
-        e.setID(ID);
-        e.setprovaID(provaID);
+        Escalao e;
+        if(!Nome.equals("")){
+            e = new Escalao(Nome, Integer.parseInt(IdadeMinima), Integer.parseInt(IdadeMaxima), Categoria);
+            e.setID(ID);
+            e.setprovaID(provaID);
+        }
+        else{
+            e = new Escalao();
+        }
         
         return e;
     } 
@@ -237,12 +251,24 @@ public class InscreveCiclistaController implements Initializable {
     }
     
     @FXML
-    public void InscreverCiclista(ActionEvent event) {  
-        String nome = txtFieldNomeCiclista.getText();
-        LocalDate dataNascimento = datePickerDataNascimento.getValue();
-        
-        Ciclista c = new Ciclista(nome, dataNascimento, this.OwnerID);
-        c.registaCiclista();
+    public void InscreverCiclista(ActionEvent event) { 
+        if(!escalaoInscrito.getNome().equals("")){
+            String nome = txtFieldNomeCiclista.getText();
+            LocalDate dataNascimento = datePickerDataNascimento.getValue();
+            Ciclista c = new Ciclista(nome, dataNascimento, this.OwnerID);
+            c.registaCiclista();
+            
+            String idUltimoInscrito = getIDLastCiclista();
+            String idProva = escalaoInscrito.getprovaID();
+            String idEscalao = escalaoInscrito.getID();
+            String dorsal = txtFieldDorsalCiclista.getText();
+            
+            Participacao p = new Participacao(idEscalao, idUltimoInscrito, idProva, dorsal);
+            p.registaParticipacao();
+        }
+        else{
+            System.out.println("Não foi possível registar o ciclista.");
+        }
     }
     
     public String getCiclista(String nome, String dataNascimento, String idade){
@@ -266,4 +292,27 @@ public class InscreveCiclistaController implements Initializable {
         
         return ID;
     } 
+    
+    
+    public String getIDLastCiclista(){
+        String ID = "";
+
+        DBConnection connectNow = new DBConnection();
+        Connection connectDB = connectNow.getConnection();
+
+        String getCiclistaID = "SELECT id FROM `ciclista` ORDER BY id DESC LIMIT 1";
+        try {
+            Statement statement = connectDB.createStatement();
+            ResultSet queryResultgetCiclistaID = statement.executeQuery(getCiclistaID);
+            while (queryResultgetCiclistaID.next()) {
+                ID = queryResultgetCiclistaID.getString("id");
+            }
+            queryResultgetCiclistaID.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+            e.getCause();
+        }
+        
+        return ID;
+    }  
 }
