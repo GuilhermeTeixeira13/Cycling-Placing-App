@@ -10,10 +10,10 @@ CREATE TABLE `Escalao` (
 
 CREATE TABLE `Ciclista` (
   `id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  `ownerID` INT(11) NOT NULL,
   `nome` varchar(255) NOT NULL,
   `dataNascimento` DATE	NOT NULL,
   `idade` INT UNSIGNED NULL,	
-  `dorsal` INT UNSIGNED NULL,
   `modified` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
@@ -23,6 +23,7 @@ CREATE TABLE `Participacao` (
   `idProva` INT(11) NOT NULL,
   `tempoProva` TIME NULL,
   `escalaoNome` varchar(255) NOT NULL, 
+  `dorsal` INT UNSIGNED NULL,
   `modified` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 

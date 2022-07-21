@@ -8,21 +8,21 @@ import java.sql.Statement;
 
 public class Ciclista {
     private String nome;
-    private int dorsal;
-    LocalDate dataNascimento;
+    private LocalDate dataNascimento;
+    private String ownerID;
 
-    public Ciclista(String nome, int dorsal, LocalDate dataNascimento) {
+    public Ciclista(String nome, LocalDate dataNascimento, String ownerID) {
         this.nome = nome;
-        this.dorsal = dorsal;
         this.dataNascimento = dataNascimento;
+        this.ownerID = ownerID;
     }
 
     public String getNome() {
         return nome;
     }
-
-    public int getDorsal() {
-        return dorsal;
+    
+    public String getOwnerID() {
+        return ownerID;
     }
 
     public LocalDate getDataNascimento() {
@@ -36,9 +36,9 @@ public class Ciclista {
     public void setNome(String nome) {
         this.nome = nome;
     }
-
-    public void setDorsal(int dorsal) {
-        this.dorsal = dorsal;
+    
+     public void setOwnerID(String OwnerID) {
+        this.ownerID = OwnerID;
     }
 
     public void setDataNascimento(LocalDate dataNascimento) {
@@ -58,13 +58,13 @@ public class Ciclista {
         DBConnection connectNow = new DBConnection();
         Connection connectDB = connectNow.getConnection();
 
-        String insertFields = "INSERT INTO ciclista(nome, dataNascimento, idade, dorsal) VALUES ('";
-        String insertValues = this.nome + "', DATE '" + this.dataNascimento + "', " + calculaIdade()+ ", "+ this.dorsal + ")";
+        String insertFields = "INSERT INTO ciclista(nome, dataNascimento, idade, ownerID) VALUES ('";
+        String insertValues = this.nome + "', DATE '" + this.dataNascimento + "', " + calculaIdade() + "," + ownerID + ")";
         String insertToProva = insertFields + insertValues;
         try {
             Statement statement = connectDB.createStatement();
             statement.executeUpdate(insertToProva);
-            System.out.println("Prova registada com sucesso!");
+            System.out.println("Ciclista registado com sucesso!");
         } catch (Exception e) {
             e.printStackTrace();
             e.getCause();

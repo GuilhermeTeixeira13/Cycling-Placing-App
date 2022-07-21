@@ -43,8 +43,8 @@
             </ImageView>
             <TextField fx:id="txtFieldNomeCiclista" layoutX="40.0" layoutY="47.0" prefHeight="27.0" prefWidth="298.0" promptText="Nome" style="-fx-background-color: transparent; -fx-border-color: #0598ff; -fx-border-width: 0px 0px 2px 0px;" />
             <TextField fx:id="txtFieldDorsalCiclista" layoutX="40.0" layoutY="89.0" prefHeight="27.0" prefWidth="82.0" promptText="Dorsal" style="-fx-background-color: transparent; -fx-border-color: #0598ff; -fx-border-width: 0px 0px 2px 0px;" />
-            <DatePicker fx:id="datePickerDataNascimento" layoutX="39.0" layoutY="202.0" prefHeight="25.0" prefWidth="297.0" promptText="Data de Nascimento" />
-            <Button fx:id="btnInscrever" layoutX="96.0" layoutY="351.0" mnemonicParsing="false" style="-fx-background-color: #0598ff;" text="Inscrever Ciclista" textFill="WHITE">
+            <DatePicker fx:id="datePickerDataNascimento" layoutX="39.0" layoutY="146.0" prefHeight="25.0" prefWidth="297.0" promptText="Data de Nascimento" />
+            <Button fx:id="btnInscrever" layoutX="96.0" layoutY="351.0" mnemonicParsing="false" onAction="#InscreverCiclista" style="-fx-background-color: #0598ff;" text="Inscrever Ciclista" textFill="WHITE">
                <font>
                   <Font name="Arial Black" size="17.0" />
                </font>
@@ -60,8 +60,8 @@
                   <Font name="Arial Black" size="15.0" />
                </font>
             </Label>
-            <ChoiceBox fx:id="choiceBoxCategorias" layoutX="134.0" layoutY="146.0" prefHeight="25.0" prefWidth="124.0" />
-            <Label layoutX="38.0" layoutY="147.0" prefHeight="23.0" prefWidth="89.0" text="Categoria:" textFill="#0598ff">
+            <ChoiceBox fx:id="choiceBoxCategorias" layoutX="137.0" layoutY="202.0" prefHeight="25.0" prefWidth="124.0" />
+            <Label layoutX="40.0" layoutY="203.0" prefHeight="23.0" prefWidth="89.0" text="Categoria:" textFill="#0598ff">
                <font>
                   <Font name="Arial Black" size="15.0" />
                </font>

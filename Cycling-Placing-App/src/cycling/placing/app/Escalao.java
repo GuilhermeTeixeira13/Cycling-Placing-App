@@ -1,18 +1,26 @@
 package cycling.placing.app;
 
 public class Escalao {
+    private String ID;
+    private String provaID;
     private String nome;
     private int idadeMin;
     private int idadeMax;
     private String categoria;
     private Distancia dist;
 
-    public Escalao(String nome, int idadeMin, int idadeMax, String categoria, Distancia dist) {
+    public Escalao(String nome, int idadeMin, int idadeMax, String categoria) {
         this.nome = nome;
         this.idadeMin = idadeMin;
         this.idadeMax = idadeMax;
         this.categoria = categoria;
-        this.dist = dist;
+    }
+    
+    public void setID(String ID) {
+        this.ID = ID;
+    }
+    public void setprovaID(String provaID) {
+        this.provaID = provaID;
     }
 
     public void setNome(String nome) {
@@ -33,6 +41,14 @@ public class Escalao {
 
     public void setDist(Distancia dist) {
         this.dist = dist;
+    }
+    
+    public String getID() {
+        return ID;
+    }
+    
+    public String getprovaID() {
+        return provaID;
     }
 
     public String getNome() {

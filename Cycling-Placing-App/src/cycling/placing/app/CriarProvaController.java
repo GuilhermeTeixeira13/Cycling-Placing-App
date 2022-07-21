@@ -214,7 +214,8 @@ public class CriarProvaController implements Initializable {
                         String[] parts = distancia.toString().split(" ");
                         Distancia d = new Distancia(Integer.parseInt(parts[0]));
                         Escalao e;
-                        e = new Escalao(txtFieldEscalao.getText(), Integer.parseInt(txtFieldIdadeMin.getText()), Integer.parseInt(txtFieldIdadeMax.getText()), categoria.toString(), d);
+                        e = new Escalao(txtFieldEscalao.getText(), Integer.parseInt(txtFieldIdadeMin.getText()), Integer.parseInt(txtFieldIdadeMax.getText()), categoria.toString());
+                        e.setDist(d);
                         escaloes = tableViewEscaloes.getItems();
                         escaloes.add(e);
                         tableViewEscaloes.setItems(escaloes);
