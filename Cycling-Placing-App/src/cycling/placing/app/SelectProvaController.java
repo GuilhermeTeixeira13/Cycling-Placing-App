@@ -183,6 +183,8 @@ public class SelectProvaController implements Initializable {
             alert.setHeaderText("Está prestes a eliminar a prova " + nomeProva + ".");
             alert.setContentText("Tem a certeza que quer eliminar " + nomeProva + "?");
             if (alert.showAndWait().get() == ButtonType.OK) {
+                eliminaCiclista(getOwnerID(), provasCriadas.get(0));
+                eliminaParticipacao(getOwnerID(), provasCriadas.get(0));
                 eliminaEscalao(getOwnerID(), provasCriadas.get(0));
                 eliminaProvaPorNome(getOwnerID(), provasCriadas.get(0));
                 btnNovaProva1.setText("Nova Prova");
@@ -206,8 +208,10 @@ public class SelectProvaController implements Initializable {
             alert.setHeaderText("Está prestes a eliminar a prova '" + nomeProva + "'.");
             alert.setContentText("Tem a certeza que quer eliminar '" + nomeProva + "'?");
             if (alert.showAndWait().get() == ButtonType.OK) {
+                eliminaCiclista(getOwnerID(), provasCriadas.get(1));
+                eliminaParticipacao(getOwnerID(), provasCriadas.get(1));
                 eliminaEscalao(getOwnerID(), provasCriadas.get(1));
-                eliminaProvaPorNome(getOwnerID(), provasCriadas.get(1));
+                eliminaProvaPorNome(getOwnerID(), provasCriadas.get(1));        
                 btnNovaProva2.setText("Nova Prova");
             }
         } else {
@@ -228,6 +232,8 @@ public class SelectProvaController implements Initializable {
             alert.setHeaderText("Está prestes a eliminar a prova '" + nomeProva + "'.");
             alert.setContentText("Tem a certeza que quer eliminar '" + nomeProva + "'?");
             if (alert.showAndWait().get() == ButtonType.OK) {
+                eliminaCiclista(getOwnerID(), provasCriadas.get(2));
+                eliminaParticipacao(getOwnerID(), provasCriadas.get(2));
                 eliminaEscalao(getOwnerID(), provasCriadas.get(2));
                 eliminaProvaPorNome(getOwnerID(), provasCriadas.get(2));
                 btnNovaProva3.setText("Nova Prova");
@@ -252,7 +258,6 @@ public class SelectProvaController implements Initializable {
             e.printStackTrace();
             e.getCause();
         }
-
     }
 
     public void eliminaEscalao(String ownerID, String NomeProva) {
@@ -264,6 +269,36 @@ public class SelectProvaController implements Initializable {
         try {
             Statement statement = connectDB.createStatement();
             statement.executeUpdate(deleteEscalao);
+        } catch (Exception e) {
+            e.printStackTrace();
+            e.getCause();
+        }
+    }
+    
+    public void eliminaCiclista(String ownerID, String NomeProva) {
+        DBConnection connectNow = new DBConnection();
+        Connection connectDB = connectNow.getConnection();
+
+        String selectCiclistas = "SELECT idCiclista FROM participacao, Prova WHERE Prova.ownerID = " + ownerID + " AND Prova.nome = '" + NomeProva + "' AND Prova.id = participacao.idProva";
+        String deleteCiclista = "DELETE FROM Ciclista WHERE id IN (" + selectCiclistas + ")";
+        try {
+            Statement statement = connectDB.createStatement();
+            statement.executeUpdate(deleteCiclista);
+        } catch (Exception e) {
+            e.printStackTrace();
+            e.getCause();
+        }
+    }
+    
+    public void eliminaParticipacao(String ownerID, String NomeProva) {
+        DBConnection connectNow = new DBConnection();
+        Connection connectDB = connectNow.getConnection();
+
+        String selectProva = "SELECT id FROM Prova WHERE ownerID = '" + ownerID + "' AND nome = '" + NomeProva + "'";
+        String deleteParticipacao = "DELETE FROM Participacao WHERE idProva IN (" + selectProva + ")";
+        try {
+            Statement statement = connectDB.createStatement();
+            statement.executeUpdate(deleteParticipacao);
         } catch (Exception e) {
             e.printStackTrace();
             e.getCause();

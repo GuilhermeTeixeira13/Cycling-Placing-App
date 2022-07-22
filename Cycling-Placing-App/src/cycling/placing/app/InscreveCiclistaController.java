@@ -59,6 +59,9 @@ public class InscreveCiclistaController implements Initializable {
     Button btnInscrever;
     
     @FXML
+    Label labelAvisos;
+    
+    @FXML
     ChoiceBox<String> choiceBoxDistancias;
     
     @FXML
@@ -110,7 +113,11 @@ public class InscreveCiclistaController implements Initializable {
         
                 if(dataNascimento != null && categoria != null && dist != null){
                     escalaoInscrito = descobreEscalaoPelaIdade(prova.get(0).getId(), String.valueOf(idade), categoria);
-                    labelEscalao.setText("Escalão: "+ escalaoInscrito.getNome());
+                    if(escalaoInscrito.getNome().equals("")){
+                        labelEscalao.setText("Escalão: Não definido.");
+                    }else{
+                        labelEscalao.setText("Escalão: "+ escalaoInscrito.getNome());
+                    }
                 }  
             }
         });
@@ -125,7 +132,11 @@ public class InscreveCiclistaController implements Initializable {
                 
                 if(dataNascimento != null && categoria != null && dist != null){
                     escalaoInscrito = descobreEscalaoPelaIdade(prova.get(0).getId(), String.valueOf(idade), categoria);
-                    labelEscalao.setText("Escalão: "+ escalaoInscrito.getNome());
+                    if(escalaoInscrito.getNome().equals("")){
+                        labelEscalao.setText("Escalão: Não definido.");
+                    }else{
+                        labelEscalao.setText("Escalão: "+ escalaoInscrito.getNome());
+                    }
                 }   
             }
         });
@@ -140,7 +151,11 @@ public class InscreveCiclistaController implements Initializable {
                 
                 if(dataNascimento != null && categoria != null && dist != null){
                     escalaoInscrito = descobreEscalaoPelaIdade(prova.get(0).getId(), String.valueOf(idade), categoria);
-                    labelEscalao.setText("Escalão: "+ escalaoInscrito.getNome());
+                    if(escalaoInscrito.getNome().equals("")){
+                        labelEscalao.setText("Escalão: Não definido.");
+                    }else{
+                        labelEscalao.setText("Escalão: "+ escalaoInscrito.getNome());
+                    }
                 }        
             }
         });
@@ -255,19 +270,32 @@ public class InscreveCiclistaController implements Initializable {
         if(!escalaoInscrito.getNome().equals("")){
             String nome = txtFieldNomeCiclista.getText();
             LocalDate dataNascimento = datePickerDataNascimento.getValue();
-            Ciclista c = new Ciclista(nome, dataNascimento, this.OwnerID);
-            c.registaCiclista();
-            
-            String idUltimoInscrito = getIDLastCiclista();
             String idProva = escalaoInscrito.getprovaID();
             String idEscalao = escalaoInscrito.getID();
             String dorsal = txtFieldDorsalCiclista.getText();
+           
             
-            Participacao p = new Participacao(idEscalao, idUltimoInscrito, idProva, dorsal);
-            p.registaParticipacao();
+            if(!existeDorsalRepetidoNaProva(idProva, dorsal)){
+                Ciclista c = new Ciclista(nome, dataNascimento, this.OwnerID);
+                c.registaCiclista();
+                
+                String idUltimoInscrito = getIDLastCiclista();
+                if(idUltimoInscrito.equals(""))
+                   idUltimoInscrito = "1";
+                
+                Participacao p = new Participacao(idEscalao, idUltimoInscrito, idProva, dorsal);
+                p.registaParticipacao();
+                
+                labelAvisos.setText("Ciclista inscrito com sucesso.");
+            }
+            else{
+                labelAvisos.setText("Esse dorsal já existe na prova.");
+            }
+          
         }
         else{
-            System.out.println("Não foi possível registar o ciclista.");
+            labelAvisos.setText("Não foi possível registar o ciclista pois o escalão não está definido.");
+            labelEscalao.setText("Escalão: Não definido.");
         }
     }
     
@@ -314,5 +342,30 @@ public class InscreveCiclistaController implements Initializable {
         }
         
         return ID;
-    }  
+    }
+    
+    public boolean existeDorsalRepetidoNaProva(String idProva, String dorsal) {
+        DBConnection connectNow = new DBConnection();
+        Connection connectDB = connectNow.getConnection();
+        String verifyDorsalRepetido = "SELECT count(1) FROM participacao WHERE idProva = '" + idProva + "' AND dorsal = '" + dorsal + "'";
+
+        boolean DorsalRepetido = false;
+
+        try {
+            Statement statement = connectDB.createStatement();
+            ResultSet queryResult = statement.executeQuery(verifyDorsalRepetido);
+
+            while (queryResult.next()) {
+                if (queryResult.getInt(1) > 0) {
+                    DorsalRepetido = true;
+                }
+            }
+            queryResult.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+            e.getCause();
+        }
+
+        return DorsalRepetido;
+    }
 }
