@@ -1,6 +1,6 @@
-package cycling.placing.app;
+package cycling.placing.app.classes;
 
-import cycling.placing.app.DBTables.DBConnection;
+import cycling.placing.app.DataBase.DBConnection;
 import java.time.LocalTime;
 import java.sql.Connection;
 import java.sql.Statement;

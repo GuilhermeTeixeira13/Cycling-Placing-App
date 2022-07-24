@@ -1,4 +1,4 @@
-package cycling.placing.app;
+package cycling.placing.app.classes;
 
 public class Prova {
     String id;

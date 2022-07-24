@@ -12,7 +12,7 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<BorderPane fx:id="sceneBorderPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cycling.placing.app.LoginController">
+<BorderPane fx:id="sceneBorderPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cycling.placing.app.authenticate.LoginController">
    <left>
       <AnchorPane prefHeight="400.0" prefWidth="280.0" style="-fx-background-color: #0598ff;" BorderPane.alignment="CENTER">
          <children>
@@ -23,7 +23,7 @@
             </Text>
             <ImageView fx:id="AppLogo" fitHeight="170.0" fitWidth="181.0" layoutX="55.0" layoutY="85.0" pickOnBounds="true" preserveRatio="true">
                <image>
-                  <Image url="@images/bike.png" />
+                  <Image url="@../images/bike.png" />
                </image></ImageView>
          </children>
       </AnchorPane>
@@ -44,27 +44,27 @@
             </Text>
             <ImageView fx:id="userLogo" fitHeight="31.0" fitWidth="28.0" layoutX="68.0" layoutY="151.0" pickOnBounds="true" preserveRatio="true">
                <image>
-                  <Image url="@images/user.png" />
+                  <Image url="@../images/user.png" />
                </image>
             </ImageView>
             <ImageView fitHeight="24.0" fitWidth="23.0" layoutX="69.0" layoutY="202.0" pickOnBounds="true" preserveRatio="true">
                <image>
-                  <Image url="@images/key.png" />
+                  <Image url="@../images/key.png" />
                </image>
             </ImageView>
             <ImageView fx:id="usersLogo" fitHeight="65.0" fitWidth="58.0" layoutX="132.0" layoutY="36.0" pickOnBounds="true" preserveRatio="true">
                <image>
-                  <Image url="@images/team.png" />
+                  <Image url="@../images/team.png" />
                </image>
             </ImageView>
             <ImageView fx:id="minimizeLogo" fitHeight="22.0" fitWidth="23.0" layoutX="261.0" layoutY="17.0" onMouseClicked="#minimizeClicked" pickOnBounds="true" preserveRatio="true">
                <image>
-                  <Image url="@images/minimize.png" />
+                  <Image url="@../images/minimize.png" />
                </image>
             </ImageView>
             <ImageView fx:id="exitLogo" fitHeight="20.0" fitWidth="20.0" layoutX="286.0" layoutY="18.0" onMouseClicked="#exitClicked" pickOnBounds="true" preserveRatio="true">
                <image>
-                  <Image url="@images/delete-button.png" />
+                  <Image url="@../images/delete-button.png" />
                </image>
             </ImageView>
             <Hyperlink alignment="CENTER" contentDisplay="CENTER" layoutY="340.0" onAction="#goToRegister" prefHeight="23.0" prefWidth="322.0" text="Criar conta" />

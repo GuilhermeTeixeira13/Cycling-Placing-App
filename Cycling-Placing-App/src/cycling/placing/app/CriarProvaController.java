@@ -1,14 +1,13 @@
 package cycling.placing.app;
 
-import cycling.placing.app.DBTables.DBConnection;
+import cycling.placing.app.classes.Distancia;
+import cycling.placing.app.classes.Escalao;
+import cycling.placing.app.DataBase.queries;
+import cycling.placing.app.classes.Prova;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import java.util.ResourceBundle;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
@@ -21,10 +20,7 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
@@ -36,12 +32,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import org.controlsfx.control.CheckComboBox;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.Statement;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import org.mindrot.jbcrypt.BCrypt;
 
 public class CriarProvaController implements Initializable {
 
@@ -62,21 +53,6 @@ public class CriarProvaController implements Initializable {
 
     @FXML
     DatePicker datePickerdataProva;
-
-    @FXML
-    Button btnAddEscalao;
-
-    @FXML
-    Button btnCriarProva;
-
-    @FXML
-    Button btnAddDistancia;
-
-    @FXML
-    Button btnRemoverDistancia;
-
-    @FXML
-    Button btnRemoverEscalao;
 
     @FXML
     TextField txtFieldIdadeMin;
@@ -262,53 +238,35 @@ public class CriarProvaController implements Initializable {
     }
 
     @FXML
-    public void minimizeClicked(MouseEvent event) {
-        Stage stage = (Stage) minimizeLogo.getScene().getWindow();
-        stage.setIconified(true);
-    }
-
-    @FXML
-    public void exitClicked(MouseEvent event) {
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("EXIT!");
-        alert.setHeaderText("Está prestes a sair da aplicação.");
-        alert.setContentText("Tem a certeza que a quer fechar? ");
-
-        if (alert.showAndWait().get() == ButtonType.OK) {
-            stage = (Stage) sceneBorderPane.getScene().getWindow();
-            stage.close();
-        }
-    }
-
-    @FXML
     public void gravarProva(ActionEvent event) throws IOException {
         if (distancias != null && escaloes != null) {
             ArrayList<Escalao> ALescaloes = new ArrayList<Escalao>(escaloes);
             ArrayList<Distancia> ALdistancias = new ArrayList<Distancia>(distancias);
-            String ownerID = getOwnerID();
+            String ownerID = queries.getOwnerID(this.username);
             String NomeProva = txtFieldNomeProva.getText();
 
-            if (existeProvaRepetida(ownerID, NomeProva)) {
-                System.out.println("Existe Prova Repetida!");
+            if (queries.existeProvaRepetida(ownerID, NomeProva)) {
                 labelAvisos.setText("Você já criou uma prova com o mesmo nome!!!");
             } else {
                 for (int i = 0; i < ALdistancias.size(); i++) {
                     LocalDate dataProva = datePickerdataProva.getValue();
                     String distanciaProva = ALdistancias.get(i).getDist();
                     String[] distanciaPartes = distanciaProva.split(" ");
+                    String distanciaNum = distanciaPartes[0];
 
-                    registaProva(ownerID, NomeProva, dataProva.toString(), distanciaPartes[0]);
-                    String provaID = getProvaID(ownerID, NomeProva, distanciaPartes[0]);
+                    queries.registaProva(ownerID, NomeProva, dataProva.toString(), distanciaNum);
+                    String provaID = queries.getProvaID(ownerID, NomeProva, distanciaNum);
                     for (int j = 0; j < ALescaloes.size(); j++) {
-                        if(distanciaPartes[0].equals(ALescaloes.get(j).getDist().toString())){
-                            registaEscalao(provaID, ALescaloes.get(j).getNome(), ALescaloes.get(j).getCategoria(), ALescaloes.get(j).getIdadeMin(), ALescaloes.get(j).getIdadeMax());
+                        if(distanciaNum.equals(ALescaloes.get(j).getDist().toString())){
+                            queries.registaEscalao(provaID, ALescaloes.get(j).getNome(), ALescaloes.get(j).getCategoria(), ALescaloes.get(j).getIdadeMin(), ALescaloes.get(j).getIdadeMax());
                         }       
                     }
 
                     System.out.println("Gravou Prova");
                 }
 
-                ProvaController provaController = new ProvaController(NomeProva, getOwnerID());
+                ArrayList<Prova> prova = queries.getProva(NomeProva, queries.getOwnerID(this.username));
+                ProvaController provaController = new ProvaController(prova, queries.getOwnerID(this.username));
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("Prova.fxml"));
                 loader.setController(provaController);
                 Parent root = loader.load();
@@ -340,114 +298,29 @@ public class CriarProvaController implements Initializable {
         }
     }
 
-    public String getProvaID(String ownerID, String NomeProva, String Distancia) {
-        String provaID = "";
-
-        DBConnection connectNow = new DBConnection();
-        Connection connectDB = connectNow.getConnection();
-
-        String getProvaID = "SELECT id FROM Prova WHERE ownerID = '" + ownerID + "' AND nome = '" + NomeProva + "' AND distancia = "+Distancia;
-        try {
-            Statement statement = connectDB.createStatement();
-            ResultSet queryResultgetProvaID = statement.executeQuery(getProvaID);
-            while (queryResultgetProvaID.next()) {
-                provaID = queryResultgetProvaID.getString("id");
-            }
-            queryResultgetProvaID.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-            e.getCause();
-        }
-
-        return provaID;
-    }
-
-    public String getOwnerID() {
-        String ownerID = "";
-
-        DBConnection connectNow = new DBConnection();
-        Connection connectDB = connectNow.getConnection();
-
-        String getUserID = "SELECT id FROM utilizadores WHERE username = '" + this.username + "'";
-        try {
-            Statement statement = connectDB.createStatement();
-            ResultSet queryResultgetUserID = statement.executeQuery(getUserID);
-            while (queryResultgetUserID.next()) {
-                ownerID = queryResultgetUserID.getString("id");
-            }
-            queryResultgetUserID.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-            e.getCause();
-        }
-
-        return ownerID;
-    }
-
-    public void registaProva(String ownerID, String NomeProva, String DataProva, String distanciaProva) {
-        DBConnection connectNow = new DBConnection();
-        Connection connectDB = connectNow.getConnection();
-
-        String insertFields = "INSERT INTO prova(ownerID, nome, dataRealizacao, distancia) VALUES ('";
-        String insertValues = ownerID + "','" + NomeProva + "', DATE '" + DataProva + "'," + distanciaProva + ")";
-        String insertToProva = insertFields + insertValues;
-        try {
-            Statement statement = connectDB.createStatement();
-            statement.executeUpdate(insertToProva);
-            System.out.println("Prova registada com sucesso!");
-        } catch (Exception e) {
-            e.printStackTrace();
-            e.getCause();
-        }
-    }
-
-    public void registaEscalao(String provaID, String NomeEscalao, String Categoria, int idadeMin, int idadeMax) {
-        DBConnection connectNow = new DBConnection();
-        Connection connectDB = connectNow.getConnection();
-
-        String insertFields = "INSERT INTO Escalao(idProva, escalaoNome, categoria, idadeMin, idadeMax) VALUES ('";
-        String insertValues = provaID + "','" + NomeEscalao + "','" + Categoria + "'," + String.valueOf(idadeMin) + "," + String.valueOf(idadeMax) + ")";
-        String insertToEscalao = insertFields + insertValues;
-        try {
-            Statement statement = connectDB.createStatement();
-            statement.executeUpdate(insertToEscalao);
-            System.out.println("Escalão registado com sucesso!");
-        } catch (Exception e) {
-            e.printStackTrace();
-            e.getCause();
-        }
-    }
-
-    public boolean existeProvaRepetida(String ownerID, String NomeProva) {
-        DBConnection connectNow = new DBConnection();
-        Connection connectDB = connectNow.getConnection();
-        String verifyProvaRepetida = "SELECT count(1) FROM prova WHERE ownerID = '" + ownerID + "' AND nome = '" + NomeProva + "'";
-
-        boolean provaRepetida = false;
-
-        try {
-            Statement statement = connectDB.createStatement();
-            ResultSet queryResult = statement.executeQuery(verifyProvaRepetida);
-
-            while (queryResult.next()) {
-                if (queryResult.getInt(1) > 0) {
-                    provaRepetida = true;
-                }
-            }
-            queryResult.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-            e.getCause();
-        }
-
-        return provaRepetida;
-    }
-
     public boolean idadesCertas(int menor, int maior) {
         if (menor > maior) {
             return false;
         } else {
             return true;
+        }
+    }
+    @FXML
+    public void minimizeClicked(MouseEvent event) {
+        Stage stage = (Stage) minimizeLogo.getScene().getWindow();
+        stage.setIconified(true);
+    }
+
+    @FXML
+    public void exitClicked(MouseEvent event) {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("EXIT!");
+        alert.setHeaderText("Está prestes a sair da aplicação.");
+        alert.setContentText("Tem a certeza que a quer fechar? ");
+
+        if (alert.showAndWait().get() == ButtonType.OK) {
+            stage = (Stage) sceneBorderPane.getScene().getWindow();
+            stage.close();
         }
     }
 }

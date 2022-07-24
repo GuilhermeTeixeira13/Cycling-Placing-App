@@ -1,6 +1,8 @@
 package cycling.placing.app;
 
-import cycling.placing.app.DBTables.DBConnection;
+import cycling.placing.app.DataBase.DBConnection;
+import cycling.placing.app.DataBase.queries;
+import cycling.placing.app.classes.Prova;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.Connection;
@@ -43,7 +45,7 @@ public class SelectProvaController implements Initializable {
     Button btnNovaProva3;
 
     @FXML
-    Button[] arrayButtons;
+    Button[] ProvasButtons;
 
     @FXML
     Label LabelUsername;
@@ -67,36 +69,37 @@ public class SelectProvaController implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
         inicializeButtonArray();
 
-        for (int i = 0; i < arrayButtons.length; i++) {
-            Button but = arrayButtons[i];
-            but.setText("Nova Prova");
-        }
-
         LabelUsername.setText("Provas de " + this.username + ":");
 
-        String ownerId = getOwnerID();
+        String ownerId = queries.getOwnerID(this.username);
 
-        int numProvas = contaProvasUser(ownerId);
+        int numProvas = queries.contaProvasUser(ownerId);
         System.out.println("O número de provas de " + ownerId + " é " + numProvas + ".");
 
-        provasCriadas = nomeProvasCriadas(ownerId);
+        provasCriadas = queries.nomeProvasCriadas(ownerId);
         System.out.println(provasCriadas);
 
         for (int i = 0; i < provasCriadas.size(); i++) {
-            Button but = arrayButtons[i];
-            but.setText(provasCriadas.get(i));
+            Button button = ProvasButtons[i];
+            button.setText(provasCriadas.get(i));
         }
     }
 
     public void inicializeButtonArray() {
-        arrayButtons = new Button[3];
-        arrayButtons[0] = btnNovaProva1;
-        arrayButtons[1] = btnNovaProva2;
-        arrayButtons[2] = btnNovaProva3;
+        ProvasButtons = new Button[3];
+        ProvasButtons[0] = btnNovaProva1;
+        ProvasButtons[1] = btnNovaProva2;
+        ProvasButtons[2] = btnNovaProva3;
+        
+        for (int i = 0; i < ProvasButtons.length; i++) {
+            Button but = ProvasButtons[i];
+            but.setText("Nova Prova");
+        }
     }
 
     public void NovaProvaButtonAction(ActionEvent event) throws IOException {
         String btnString = ((Button) event.getSource()).getText();
+        
         if (btnString.equals("Nova Prova")) {
             CriarProvaController criarProvaController = new CriarProvaController(username);
             FXMLLoader loader = new FXMLLoader(getClass().getResource("CriarProva.fxml"));
@@ -125,7 +128,8 @@ public class SelectProvaController implements Initializable {
             stage.setScene(scene);
             stage.show();
         } else {
-            ProvaController provaController = new ProvaController(btnString, getOwnerID());
+            ArrayList<Prova> prova = queries.getProva(btnString, queries.getOwnerID(this.username));
+            ProvaController provaController = new ProvaController(prova, queries.getOwnerID(this.username));
             FXMLLoader loader = new FXMLLoader(getClass().getResource("Prova.fxml"));
             loader.setController(provaController);
             Parent root = loader.load();
@@ -153,24 +157,12 @@ public class SelectProvaController implements Initializable {
             stage.show();
         }
     }
-
-    @FXML
-    public void exitClicked(MouseEvent event) {
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("EXIT!");
-        alert.setHeaderText("Está prestes a sair da aplicação.");
-        alert.setContentText("Tem a certeza que a quer fechar? ");
-
-        if (alert.showAndWait().get() == ButtonType.OK) {
-            stage = (Stage) sceneBorderPane.getScene().getWindow();
-            stage.close();
-        }
-    }
-
-    @FXML
-    public void minimizeClicked(MouseEvent event) {
-        Stage stage = (Stage) minimizeLogo.getScene().getWindow();
-        stage.setIconified(true);
+    
+    public void eliminaDadosProva(int numprova){
+        queries.eliminaCiclista(queries.getOwnerID(this.username), provasCriadas.get(numprova));
+        queries.eliminaParticipacao(queries.getOwnerID(this.username), provasCriadas.get(numprova));
+        queries.eliminaEscalao(queries.getOwnerID(this.username), provasCriadas.get(numprova));
+        queries.eliminaProvaPorNome(queries.getOwnerID(this.username), provasCriadas.get(numprova));
     }
 
     @FXML
@@ -183,10 +175,7 @@ public class SelectProvaController implements Initializable {
             alert.setHeaderText("Está prestes a eliminar a prova " + nomeProva + ".");
             alert.setContentText("Tem a certeza que quer eliminar " + nomeProva + "?");
             if (alert.showAndWait().get() == ButtonType.OK) {
-                eliminaCiclista(getOwnerID(), provasCriadas.get(0));
-                eliminaParticipacao(getOwnerID(), provasCriadas.get(0));
-                eliminaEscalao(getOwnerID(), provasCriadas.get(0));
-                eliminaProvaPorNome(getOwnerID(), provasCriadas.get(0));
+                eliminaDadosProva(0);
                 btnNovaProva1.setText("Nova Prova");
             }
         } else {
@@ -208,10 +197,7 @@ public class SelectProvaController implements Initializable {
             alert.setHeaderText("Está prestes a eliminar a prova '" + nomeProva + "'.");
             alert.setContentText("Tem a certeza que quer eliminar '" + nomeProva + "'?");
             if (alert.showAndWait().get() == ButtonType.OK) {
-                eliminaCiclista(getOwnerID(), provasCriadas.get(1));
-                eliminaParticipacao(getOwnerID(), provasCriadas.get(1));
-                eliminaEscalao(getOwnerID(), provasCriadas.get(1));
-                eliminaProvaPorNome(getOwnerID(), provasCriadas.get(1));        
+                eliminaDadosProva(1);        
                 btnNovaProva2.setText("Nova Prova");
             }
         } else {
@@ -232,10 +218,7 @@ public class SelectProvaController implements Initializable {
             alert.setHeaderText("Está prestes a eliminar a prova '" + nomeProva + "'.");
             alert.setContentText("Tem a certeza que quer eliminar '" + nomeProva + "'?");
             if (alert.showAndWait().get() == ButtonType.OK) {
-                eliminaCiclista(getOwnerID(), provasCriadas.get(2));
-                eliminaParticipacao(getOwnerID(), provasCriadas.get(2));
-                eliminaEscalao(getOwnerID(), provasCriadas.get(2));
-                eliminaProvaPorNome(getOwnerID(), provasCriadas.get(2));
+                eliminaDadosProva(2);
                 btnNovaProva3.setText("Nova Prova");
             }
         } else {
@@ -245,131 +228,23 @@ public class SelectProvaController implements Initializable {
             alert.showAndWait();
         }
     }
-
-    public void eliminaProvaPorNome(String ownerID, String NomeProva) {
-        DBConnection connectNow = new DBConnection();
-        Connection connectDB = connectNow.getConnection();
-
-        String deleteProva = "DELETE FROM Prova WHERE ownerID = '" + ownerID + "' AND nome = '" + NomeProva + "'";
-        try {
-            Statement statement = connectDB.createStatement();
-            statement.executeUpdate(deleteProva);
-        } catch (Exception e) {
-            e.printStackTrace();
-            e.getCause();
-        }
-    }
-
-    public void eliminaEscalao(String ownerID, String NomeProva) {
-        DBConnection connectNow = new DBConnection();
-        Connection connectDB = connectNow.getConnection();
-
-        String selectProva = "SELECT id FROM Prova WHERE ownerID = '" + ownerID + "' AND nome = '" + NomeProva + "'";
-        String deleteEscalao = "DELETE FROM Escalao WHERE idProva IN (" + selectProva + ")";
-        try {
-            Statement statement = connectDB.createStatement();
-            statement.executeUpdate(deleteEscalao);
-        } catch (Exception e) {
-            e.printStackTrace();
-            e.getCause();
-        }
-    }
     
-    public void eliminaCiclista(String ownerID, String NomeProva) {
-        DBConnection connectNow = new DBConnection();
-        Connection connectDB = connectNow.getConnection();
+    @FXML
+    public void exitClicked(MouseEvent event) {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("EXIT!");
+        alert.setHeaderText("Está prestes a sair da aplicação.");
+        alert.setContentText("Tem a certeza que a quer fechar? ");
 
-        String selectCiclistas = "SELECT idCiclista FROM participacao, Prova WHERE Prova.ownerID = " + ownerID + " AND Prova.nome = '" + NomeProva + "' AND Prova.id = participacao.idProva";
-        String deleteCiclista = "DELETE FROM Ciclista WHERE id IN (" + selectCiclistas + ")";
-        try {
-            Statement statement = connectDB.createStatement();
-            statement.executeUpdate(deleteCiclista);
-        } catch (Exception e) {
-            e.printStackTrace();
-            e.getCause();
-        }
-    }
-    
-    public void eliminaParticipacao(String ownerID, String NomeProva) {
-        DBConnection connectNow = new DBConnection();
-        Connection connectDB = connectNow.getConnection();
-
-        String selectProva = "SELECT id FROM Prova WHERE ownerID = '" + ownerID + "' AND nome = '" + NomeProva + "'";
-        String deleteParticipacao = "DELETE FROM Participacao WHERE idProva IN (" + selectProva + ")";
-        try {
-            Statement statement = connectDB.createStatement();
-            statement.executeUpdate(deleteParticipacao);
-        } catch (Exception e) {
-            e.printStackTrace();
-            e.getCause();
+        if (alert.showAndWait().get() == ButtonType.OK) {
+            stage = (Stage) sceneBorderPane.getScene().getWindow();
+            stage.close();
         }
     }
 
-    public int contaProvasUser(String ownerID) {
-        DBConnection connectNow = new DBConnection();
-        Connection connectDB = connectNow.getConnection();
-        String verifyProvaRepetida = "SELECT count(*) FROM prova WHERE ownerID = '" + ownerID + "' GROUP BY nome";
-
-        int numProvas = 0;
-
-        try {
-            Statement statement = connectDB.createStatement();
-            ResultSet queryResult = statement.executeQuery(verifyProvaRepetida);
-
-            while (queryResult.next()) {
-                numProvas++;
-            }
-            queryResult.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-            e.getCause();
-        }
-
-        return numProvas;
-    }
-
-    public ArrayList<String> nomeProvasCriadas(String ownerID) {
-        ArrayList<String> provasCriadas = new ArrayList<String>();
-
-        DBConnection connectNow = new DBConnection();
-        Connection connectDB = connectNow.getConnection();
-        String verifyProvaRepetida = "SELECT nome FROM prova WHERE ownerID = '" + ownerID + "' GROUP BY nome";
-
-        try {
-            Statement statement = connectDB.createStatement();
-            ResultSet queryResult = statement.executeQuery(verifyProvaRepetida);
-
-            while (queryResult.next()) {
-                provasCriadas.add(queryResult.getString("nome"));
-            }
-            queryResult.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-            e.getCause();
-        }
-
-        return provasCriadas;
-    }
-
-    public String getOwnerID() {
-        String ownerID = "";
-
-        DBConnection connectNow = new DBConnection();
-        Connection connectDB = connectNow.getConnection();
-
-        String getUserID = "SELECT id FROM utilizadores WHERE username = '" + this.username + "'";
-        try {
-            Statement statement = connectDB.createStatement();
-            ResultSet queryResultgetUserID = statement.executeQuery(getUserID);
-            while (queryResultgetUserID.next()) {
-                ownerID = queryResultgetUserID.getString("id");
-            }
-            queryResultgetUserID.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-            e.getCause();
-        }
-
-        return ownerID;
+    @FXML
+    public void minimizeClicked(MouseEvent event) {
+        Stage stage = (Stage) minimizeLogo.getScene().getWindow();
+        stage.setIconified(true);
     }
 }

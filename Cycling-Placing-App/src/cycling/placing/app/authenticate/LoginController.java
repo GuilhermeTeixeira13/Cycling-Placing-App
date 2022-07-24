@@ -1,6 +1,7 @@
-package cycling.placing.app;
+package cycling.placing.app.authenticate;
 
-import cycling.placing.app.DBTables.DBConnection;
+import cycling.placing.app.DataBase.DBConnection;
+import cycling.placing.app.SelectProvaController;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -33,11 +34,9 @@ public class LoginController implements Initializable {
     @FXML
     PasswordField passFieldPassword;
     
-    
     @FXML
     ImageView minimizeLogo;
    
-    
     @FXML
     Label LoginResult;
     
@@ -122,25 +121,6 @@ public class LoginController implements Initializable {
         stage.show();
     }
     
-    @FXML
-    public void exitClicked(MouseEvent event) {
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("EXIT!");
-        alert.setHeaderText("Está prestes a sair da aplicação.");
-        alert.setContentText("Tem a certeza que a quer fechar? ");
-
-        if (alert.showAndWait().get() == ButtonType.OK) {
-            stage = (Stage) sceneBorderPane.getScene().getWindow();
-            stage.close();
-        }
-    }
-    
-    @FXML
-    public void minimizeClicked(MouseEvent event) {
-        Stage stage = (Stage) minimizeLogo.getScene().getWindow();
-        stage.setIconified(true);
-    }
-    
     public Boolean validateLogin(){
         DBConnection connectNow = new DBConnection();
         Connection connectDB = connectNow.getConnection();
@@ -176,5 +156,24 @@ public class LoginController implements Initializable {
             e.getCause();
         }
         return false;
+    }
+    
+    @FXML
+    public void exitClicked(MouseEvent event) {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("EXIT!");
+        alert.setHeaderText("Está prestes a sair da aplicação.");
+        alert.setContentText("Tem a certeza que a quer fechar? ");
+
+        if (alert.showAndWait().get() == ButtonType.OK) {
+            stage = (Stage) sceneBorderPane.getScene().getWindow();
+            stage.close();
+        }
+    }
+    
+    @FXML
+    public void minimizeClicked(MouseEvent event) {
+        Stage stage = (Stage) minimizeLogo.getScene().getWindow();
+        stage.setIconified(true);
     }
 }

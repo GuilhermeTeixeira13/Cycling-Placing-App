@@ -1,4 +1,6 @@
-import cycling.placing.app.DBTables.DBConnection;
+package cycling.placing.app.authenticate;
+
+import cycling.placing.app.DataBase.DBConnection;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.Connection;
@@ -77,8 +79,7 @@ public class RegisterController implements Initializable {
                 else{
                     RegisterConfirmationLabel.setText("Já existe um utilizador com esse nome.");
                 }
-            }
-            
+            }     
             queryResult.close();
         }catch(Exception e){
             e.printStackTrace();
