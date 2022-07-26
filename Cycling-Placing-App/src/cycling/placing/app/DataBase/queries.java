@@ -338,7 +338,7 @@ public class queries {
         return ID;
     }
     
-    public static boolean existeDorsalRepetidoNaProva(String idProva, String dorsal) {
+    public static boolean DorsalExisteNaProva(String idProva, String dorsal) {
         DBConnection connectNow = new DBConnection();
         Connection connectDB = connectNow.getConnection();
         String verifyDorsalRepetido = "SELECT count(1) FROM participacao WHERE idProva = '" + idProva + "' AND dorsal = '" + dorsal + "'";

@@ -83,6 +83,36 @@ public class ProvaController implements Initializable {
     }
     
     @FXML
+    public void ComecarProvaButton(ActionEvent event) throws IOException {
+        ComecarProvaController comecarProvaController = new ComecarProvaController(this.prova, this.OwnerID);
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("ComecarProva.fxml"));
+        loader.setController(comecarProvaController);
+        Parent root = loader.load();
+
+        stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        scene = new Scene(root);
+
+        root.setOnMousePressed(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                xOffset = event.getSceneX();
+                yOffset = event.getSceneY();
+            }
+        });
+
+        root.setOnMouseDragged(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                stage.setX(event.getScreenX() - xOffset);
+                stage.setY(event.getScreenY() - yOffset);
+            }
+        });
+
+        stage.setScene(scene);
+        stage.show();
+    }
+    
+    @FXML
     public void exitClicked(MouseEvent event) {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("EXIT!");

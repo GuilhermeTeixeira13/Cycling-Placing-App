@@ -173,9 +173,16 @@ public class InscreveCiclistaController implements Initializable {
             String idProva = escalaoInscrito.getprovaID();
             String idEscalao = escalaoInscrito.getID();
             String dorsal = txtFieldDorsalCiclista.getText();
+            
+            Boolean existeRepetido = false;
+            int i = 0;
+            while(i<prova.size() && existeRepetido == false){
+                existeRepetido = queries.DorsalExisteNaProva(prova.get(i).getId(), dorsal);
+                i++;
+            }
            
             
-            if(!queries.existeDorsalRepetidoNaProva(idProva, dorsal)){
+            if(existeRepetido == false){
                 Ciclista c = new Ciclista(nome, dataNascimento, this.OwnerID);
                 c.registaCiclista();
                 
