@@ -362,4 +362,21 @@ public class queries {
 
         return DorsalRepetido;
     }
+    
+    public static void RegistarTempo(String idProva, String dorsal, String Time) {
+        DBConnection connectNow = new DBConnection();
+        Connection connectDB = connectNow.getConnection();
+        String registaTempo = 
+        "UPDATE Participacao\n" +
+        "SET tempoProva = '" + Time + "'\n" +
+        "WHERE idProva = '" + idProva + "' AND dorsal = '" + dorsal + "'";
+
+        try {
+            Statement statement = connectDB.createStatement();
+            statement.executeUpdate(registaTempo);
+        } catch (Exception e) {
+            e.printStackTrace();
+            e.getCause();
+        }
+    }
 }

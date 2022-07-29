@@ -1,5 +1,6 @@
 package cycling.placing.app;
 
+import cycling.placing.app.DataBase.queries;
 import cycling.placing.app.classes.Prova;
 import java.io.IOException;
 import java.net.URL;
@@ -100,11 +101,21 @@ public class ComecarProvaController implements Initializable {
             LabelAvisos.setText("Escreva um número de dorsal para o conseguir registar.");
         }
         else{
-            // Registar Dorsal
+            boolean dorsalExisteNaProva = false;
+            String idProva = "";
             
-            // Ver se o dorsal existe na prova
-            // Caso exista em pelo menos uma das distancias, regista o tempo do ciclista que tem esse dorsal
-            // Caso não, erro
+            for(int i=0; i<this.prova.size() && dorsalExisteNaProva == false; i++){
+                dorsalExisteNaProva = queries.DorsalExisteNaProva(this.prova.get(i).getId(), txtFieldDorsal.getText());
+                idProva = this.prova.get(i).getId();
+            }
+            
+            if(dorsalExisteNaProva == true){
+                queries.RegistarTempo(idProva, txtFieldDorsal.getText(), LabelCronometro.getText());
+                LabelAvisos.setText("Dorsal " + txtFieldDorsal.getText() + " terminou a prova em " + LabelCronometro.getText() + ".");
+            }
+            else{
+                LabelAvisos.setText("Este dorsal não existe na prova.");
+            }
         }
     }
 
