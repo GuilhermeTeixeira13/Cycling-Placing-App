@@ -113,6 +113,11 @@ public class ProvaController implements Initializable {
     }
     
     @FXML
+    public void ResultadosButton(ActionEvent event) throws IOException {
+        
+    }
+    
+    @FXML
     public void exitClicked(MouseEvent event) {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("EXIT!");

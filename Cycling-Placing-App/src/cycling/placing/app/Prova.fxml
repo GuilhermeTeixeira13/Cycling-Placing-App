@@ -48,7 +48,7 @@
                   <Font name="Arial Black" size="15.0" />
                </font>
             </Button>
-            <Button fx:id="btnResultados" layoutX="86.0" layoutY="319.0" mnemonicParsing="false" prefHeight="36.0" prefWidth="166.0" style="-fx-background-color: #0598ff;" text="Resultados" textFill="WHITE">
+            <Button fx:id="btnResultados" layoutX="86.0" layoutY="319.0" mnemonicParsing="false" onAction="#ResultadosButton" prefHeight="36.0" prefWidth="166.0" style="-fx-background-color: #0598ff;" text="Resultados" textFill="WHITE">
                <font>
                   <Font name="Arial Black" size="15.0" />
                </font>
