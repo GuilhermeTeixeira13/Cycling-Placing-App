@@ -1,6 +1,9 @@
 package cycling.placing.app;
 
 import cycling.placing.app.classes.Prova;
+import cycling.placing.app.DataBase.queries;
+import cycling.placing.app.classes.Classificacao;
+import cycling.placing.app.classes.Escalao;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -114,7 +117,26 @@ public class ProvaController implements Initializable {
     
     @FXML
     public void ResultadosButton(ActionEvent event) throws IOException {
-        
+        for(int i=0; i<this.prova.size(); i++){
+            ArrayList<Escalao> EscaloesDaProva = queries.getEscaloesDaProva(this.prova.get(i).getId());
+            System.out.println("\n\nProva: " + this.prova.get(i).getNome() + " // Distância: " + this.prova.get(i).getDistancia());
+            
+            for(int j=0; j<EscaloesDaProva.size(); j++){
+                
+                ArrayList<Classificacao> classificacoesDoEscalao = queries.classificaPorEscalao(this.prova.get(i).getId(), EscaloesDaProva.get(j).getID());
+                
+                if(classificacoesDoEscalao.isEmpty() == false){
+                    System.out.println("-------------------------------\nEscalão: "+ EscaloesDaProva.get(j).getNome() + " // " + EscaloesDaProva.get(j).getCategoria());
+                    for(int k=0; k < classificacoesDoEscalao.size(); k++){
+                        System.out.println(k+1 + "ª -> " + classificacoesDoEscalao.get(k).getNomeCiclista() + " // " + classificacoesDoEscalao.get(k).getTempoProva());
+                    }
+                    System.out.println("-------------------------------");
+                }  
+                else{
+                    System.out.println("Ainda não há classificações no escalão " + EscaloesDaProva.get(j).getNome() + " " + EscaloesDaProva.get(j).getCategoria() + "[ID=" + EscaloesDaProva.get(j).getID() + "] na Prova '"+ this.prova.get(i).getNome()+"' Distância: "+this.prova.get(i).getDistancia()+"KM [ID="+this.prova.get(i).getId()+"]");    
+                }    
+            }
+        }
     }
     
     @FXML

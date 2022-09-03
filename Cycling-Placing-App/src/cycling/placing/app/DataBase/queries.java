@@ -1,5 +1,6 @@
 package cycling.placing.app.DataBase;
 
+import cycling.placing.app.classes.Classificacao;
 import cycling.placing.app.classes.Escalao;
 import cycling.placing.app.classes.Prova;
 import java.sql.Connection;
@@ -293,6 +294,84 @@ public class queries {
         return e;
     } 
     
+    public static ArrayList<Escalao> getEscaloesDaProva(String IDProva){
+        String provaID = "";
+        String Nome = "";
+        String ID = "";
+        String Categoria = "";
+        String IdadeMinima = "";
+        String IdadeMaxima = "";
+        
+        ArrayList<Escalao> EscaloesDaProva = new ArrayList<Escalao>();
+
+        DBConnection connectNow = new DBConnection();
+        Connection connectDB = connectNow.getConnection();
+
+        String getIDEscaloesDaProva = "SELECT * FROM escalao WHERE idProva = '" + IDProva + "'";
+        try {
+            Statement statement = connectDB.createStatement();
+            ResultSet queryResultgetIDEscaloesDaProva = statement.executeQuery(getIDEscaloesDaProva);
+            while (queryResultgetIDEscaloesDaProva.next()) {
+                provaID = queryResultgetIDEscaloesDaProva.getString("idProva");
+                Nome = queryResultgetIDEscaloesDaProva.getString("escalaoNome");
+                ID = queryResultgetIDEscaloesDaProva.getString("id");
+                Categoria = queryResultgetIDEscaloesDaProva.getString("categoria");
+                IdadeMinima = queryResultgetIDEscaloesDaProva.getString("idadeMin");
+                IdadeMaxima = queryResultgetIDEscaloesDaProva.getString("idadeMax");
+                
+                Escalao e = new Escalao(Nome, Integer.parseInt(IdadeMinima), Integer.parseInt(IdadeMaxima), Categoria);
+                e.setID(ID);
+                e.setprovaID(provaID);
+                
+                EscaloesDaProva.add(e);
+            }
+            queryResultgetIDEscaloesDaProva.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+            e.getCause();
+        }
+        
+        return EscaloesDaProva;
+    } 
+    
+    public static ArrayList<Classificacao> classificaPorEscalao(String IDProva, String IDEscalao){
+        String NomeCiclista = "";
+        String TempoProva = "";
+        String Categoria = "";
+        String Escalao = "";
+        
+        ArrayList<Classificacao> classificacoesDoEscalao = new ArrayList<Classificacao>();
+
+        DBConnection connectNow = new DBConnection();
+        Connection connectDB = connectNow.getConnection();
+
+        String getClassificacao = "SELECT ciclista.nome, participacao.tempoProva, escalao.categoria, escalao.escalaoNome " +
+                                "FROM participacao, ciclista, escalao " +
+                                "WHERE participacao.IDProva = '" + IDProva + "' " + 
+                                "AND escalao.id = '" + IDEscalao + "' " +
+                                "AND participacao.idProva = escalao.idProva AND participacao.idEscalao = escalao.id AND participacao.idCiclista = ciclista.id " + 
+                                "ORDER BY participacao.tempoProva ASC";
+        try {
+            Statement statement = connectDB.createStatement();
+            ResultSet queryResultgetClassificacao = statement.executeQuery(getClassificacao);
+            while (queryResultgetClassificacao.next()) {
+                NomeCiclista = queryResultgetClassificacao.getString("ciclista.nome");
+                TempoProva = queryResultgetClassificacao.getString("participacao.tempoProva");
+                Categoria = queryResultgetClassificacao.getString("escalao.categoria");
+                Escalao = queryResultgetClassificacao.getString("escalao.escalaoNome");
+                
+                Classificacao c = new Classificacao(NomeCiclista, TempoProva, Categoria, Escalao);
+                classificacoesDoEscalao.add(c);
+            }
+            queryResultgetClassificacao.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+            e.getCause();
+        }
+
+        return classificacoesDoEscalao;
+    } 
+    
     public static String getCiclista(String nome, String dataNascimento, String idade){
         String ID = "";
 
@@ -314,7 +393,6 @@ public class queries {
         
         return ID;
     } 
-    
     
     public static String getIDLastCiclista(){
         String ID = "";
