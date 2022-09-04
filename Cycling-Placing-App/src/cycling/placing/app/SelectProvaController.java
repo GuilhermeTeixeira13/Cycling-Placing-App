@@ -1,13 +1,9 @@
 package cycling.placing.app;
 
-import cycling.placing.app.DataBase.DBConnection;
 import cycling.placing.app.DataBase.queries;
 import cycling.placing.app.classes.Prova;
 import java.io.IOException;
 import java.net.URL;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
@@ -74,10 +70,8 @@ public class SelectProvaController implements Initializable {
         String ownerId = queries.getOwnerID(this.username);
 
         int numProvas = queries.contaProvasUser(ownerId);
-        System.out.println("O número de provas de " + ownerId + " é " + numProvas + ".");
 
         provasCriadas = queries.nomeProvasCriadas(ownerId);
-        System.out.println(provasCriadas);
 
         for (int i = 0; i < provasCriadas.size(); i++) {
             Button button = ProvasButtons[i];

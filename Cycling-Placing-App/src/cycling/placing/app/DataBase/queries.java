@@ -372,6 +372,43 @@ public class queries {
         return classificacoesDoEscalao;
     } 
     
+    public static ArrayList<Classificacao> classificaGeralDaProva(String IDProva){
+        String NomeCiclista = "";
+        String TempoProva = "";
+        String Categoria = "";
+        String Escalao = "";
+        
+        ArrayList<Classificacao> classificacaoGeralProva = new ArrayList<Classificacao>();
+
+        DBConnection connectNow = new DBConnection();
+        Connection connectDB = connectNow.getConnection();
+
+        String getClassificacao = "SELECT ciclista.nome, participacao.tempoProva, escalao.categoria, escalao.escalaoNome " +
+                                "FROM participacao, ciclista, escalao " +
+                                "WHERE participacao.IDProva = '" + IDProva + "' " + 
+                                "AND participacao.idProva = escalao.idProva AND participacao.idEscalao = escalao.id AND participacao.idCiclista = ciclista.id " + 
+                                "ORDER BY participacao.tempoProva ASC";
+        try {
+            Statement statement = connectDB.createStatement();
+            ResultSet queryResultgetClassificacao = statement.executeQuery(getClassificacao);
+            while (queryResultgetClassificacao.next()) {
+                NomeCiclista = queryResultgetClassificacao.getString("ciclista.nome");
+                TempoProva = queryResultgetClassificacao.getString("participacao.tempoProva");
+                Categoria = queryResultgetClassificacao.getString("escalao.categoria");
+                Escalao = queryResultgetClassificacao.getString("escalao.escalaoNome");
+                
+                Classificacao c = new Classificacao(NomeCiclista, TempoProva, Categoria, Escalao);
+                classificacaoGeralProva.add(c);
+            }
+            queryResultgetClassificacao.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+            e.getCause();
+        }
+
+        return classificacaoGeralProva;
+    } 
+    
     public static String getCiclista(String nome, String dataNascimento, String idade){
         String ID = "";
 
