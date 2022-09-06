@@ -117,8 +117,6 @@ public class ProvaController implements Initializable {
 
     @FXML
     public void ResultadosButton(ActionEvent event) throws IOException {
-        mostraClassificacoes();
-
         ResultadosPathAndGeneratorController resultadosPathAndGeneratorController = new ResultadosPathAndGeneratorController(this.prova, this.OwnerID);
         FXMLLoader loader = new FXMLLoader(getClass().getResource("ResultadosPathAndGenerator.fxml"));
         loader.setController(resultadosPathAndGeneratorController);
@@ -145,43 +143,6 @@ public class ProvaController implements Initializable {
 
         stage.setScene(scene);
         stage.show();
-    }
-
-    public void mostraClassificacaoPorEscaloes(Prova Prova, Escalao Escalao) {
-        ArrayList<Classificacao> classificacoesDoEscalao = queries.classificaPorEscalao(Prova.getId(), Escalao.getID());
-        if (classificacoesDoEscalao.isEmpty() == false) {
-            System.out.println("-------------------------------\nEscalão: " + Escalao.getNome() + " // " + Escalao.getCategoria());
-            for (int k = 0; k < classificacoesDoEscalao.size(); k++) {
-                System.out.println(k + 1 + "ª -> " + classificacoesDoEscalao.get(k).getNomeCiclista() + " // " + classificacoesDoEscalao.get(k).getTempoProva());
-            }
-            System.out.println("-------------------------------");
-        } else {
-            System.out.println("Ainda não há classificações no escalão " + Escalao.getNome() + " " + Escalao.getCategoria() + "[ID=" + Escalao.getID() + "] na Prova '" + Prova.getNome() + "' Distância: " + Prova.getDistancia() + "KM [ID=" + Prova.getId() + "]");
-        }
-    }
-
-    public void mostraClassificacaoGeral(Prova Prova) {
-        ArrayList<Classificacao> classificacaoGeralProva = queries.classificaGeralDaProva(Prova.getId());
-
-        System.out.println("-------------------------------\n" + "Classificação GERAL:");
-        for (int k = 0; k < classificacaoGeralProva.size(); k++) {
-            System.out.println(k + 1 + "ª -> " + classificacaoGeralProva.get(k).getNomeCiclista() + " // " + classificacaoGeralProva.get(k).getTempoProva());
-        }
-    }
-
-    public void mostraClassificacoes() {
-        for (int i = 0; i < this.prova.size(); i++) {
-            System.out.println("\n******************************************************************************************************\n");
-
-            System.out.println("Prova: '" + this.prova.get(i).getNome() + "' // Distância: " + this.prova.get(i).getDistancia() + "KM");
-
-            mostraClassificacaoGeral(this.prova.get(i));
-
-            ArrayList<Escalao> EscaloesDaProva = queries.getEscaloesDaProva(this.prova.get(i).getId());
-            for (int j = 0; j < EscaloesDaProva.size(); j++) {
-                mostraClassificacaoPorEscaloes(this.prova.get(i), EscaloesDaProva.get(j));
-            }
-        }
     }
 
     @FXML

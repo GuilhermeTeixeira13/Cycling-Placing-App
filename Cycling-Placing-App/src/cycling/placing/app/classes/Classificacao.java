@@ -2,12 +2,14 @@ package cycling.placing.app.classes;
 
 public class Classificacao {
     String NomeCiclista = "";
+    String Dorsal = "";
     String TempoProva = "";
     String Categoria = "";
     String Escalao = "";
 
-    public Classificacao(String NomeCiclista, String TempoProva, String Categoria, String Escalao) {
+    public Classificacao(String NomeCiclista, String Dorsal, String TempoProva, String Categoria, String Escalao) {
         this.NomeCiclista = NomeCiclista;
+        this.Dorsal = Dorsal;
         this.TempoProva = TempoProva;
         this.Categoria = Categoria;
         this.Escalao = Escalao;
@@ -15,6 +17,10 @@ public class Classificacao {
 
     public String getNomeCiclista() {
         return NomeCiclista;
+    }
+    
+    public String getDorsal() {
+        return Dorsal;
     }
 
     public String getTempoProva() {
@@ -31,6 +37,10 @@ public class Classificacao {
 
     public void setNomeCiclista(String NomeCiclista) {
         this.NomeCiclista = NomeCiclista;
+    }
+    
+    public void setDorsal(String Dorsal) {
+        this.Dorsal = Dorsal;
     }
 
     public void setTempoProva(String TempoProva) {

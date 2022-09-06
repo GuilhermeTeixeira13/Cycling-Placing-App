@@ -339,13 +339,14 @@ public class queries {
         String TempoProva = "";
         String Categoria = "";
         String Escalao = "";
+        String Dorsal = "";
         
         ArrayList<Classificacao> classificacoesDoEscalao = new ArrayList<Classificacao>();
 
         DBConnection connectNow = new DBConnection();
         Connection connectDB = connectNow.getConnection();
 
-        String getClassificacao = "SELECT ciclista.nome, participacao.tempoProva, escalao.categoria, escalao.escalaoNome " +
+        String getClassificacao = "SELECT ciclista.nome, participacao.dorsal, participacao.tempoProva, escalao.categoria, escalao.escalaoNome " +
                                 "FROM participacao, ciclista, escalao " +
                                 "WHERE participacao.IDProva = '" + IDProva + "' " + 
                                 "AND escalao.id = '" + IDEscalao + "' " +
@@ -359,8 +360,9 @@ public class queries {
                 TempoProva = queryResultgetClassificacao.getString("participacao.tempoProva");
                 Categoria = queryResultgetClassificacao.getString("escalao.categoria");
                 Escalao = queryResultgetClassificacao.getString("escalao.escalaoNome");
+                Dorsal = queryResultgetClassificacao.getString("participacao.dorsal");
                 
-                Classificacao c = new Classificacao(NomeCiclista, TempoProva, Categoria, Escalao);
+                Classificacao c = new Classificacao(NomeCiclista, Dorsal, TempoProva, Categoria, Escalao);
                 classificacoesDoEscalao.add(c);
             }
             queryResultgetClassificacao.close();
@@ -377,13 +379,14 @@ public class queries {
         String TempoProva = "";
         String Categoria = "";
         String Escalao = "";
+        String Dorsal = "";
         
         ArrayList<Classificacao> classificacaoGeralProva = new ArrayList<Classificacao>();
 
         DBConnection connectNow = new DBConnection();
         Connection connectDB = connectNow.getConnection();
 
-        String getClassificacao = "SELECT ciclista.nome, participacao.tempoProva, escalao.categoria, escalao.escalaoNome " +
+        String getClassificacao = "SELECT ciclista.nome, participacao.dorsal, participacao.tempoProva, escalao.categoria, escalao.escalaoNome " +
                                 "FROM participacao, ciclista, escalao " +
                                 "WHERE participacao.IDProva = '" + IDProva + "' " + 
                                 "AND participacao.idProva = escalao.idProva AND participacao.idEscalao = escalao.id AND participacao.idCiclista = ciclista.id " + 
@@ -396,8 +399,9 @@ public class queries {
                 TempoProva = queryResultgetClassificacao.getString("participacao.tempoProva");
                 Categoria = queryResultgetClassificacao.getString("escalao.categoria");
                 Escalao = queryResultgetClassificacao.getString("escalao.escalaoNome");
+                Dorsal = queryResultgetClassificacao.getString("participacao.dorsal");
                 
-                Classificacao c = new Classificacao(NomeCiclista, TempoProva, Categoria, Escalao);
+                Classificacao c = new Classificacao(NomeCiclista, Dorsal, TempoProva, Categoria, Escalao);
                 classificacaoGeralProva.add(c);
             }
             queryResultgetClassificacao.close();
