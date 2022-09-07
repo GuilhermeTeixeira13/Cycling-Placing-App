@@ -18,6 +18,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -150,7 +151,7 @@ public class ResultadosPathAndGeneratorController implements Initializable {
         }
     }
 
-    public void mostraClassificacaoPorEscaloes(Prova Prova, Escalao Escalao) throws ParseException {
+    public String mostraClassificacaoPorEscaloes(Prova Prova, Escalao Escalao) throws ParseException {
         ArrayList<Classificacao> classificacoesDoEscalao = queries.classificaPorEscalao(Prova.getId(), Escalao.getID());
         String tempoPrimeiroClassificado = "", gap = "";
         
@@ -201,9 +202,15 @@ public class ResultadosPathAndGeneratorController implements Initializable {
         } else {
             System.out.println("Ainda não há classificações no escalão " + Escalao.getNome() + " " + Escalao.getCategoria() + "[ID=" + Escalao.getID() + "] na Prova '" + Prova.getNome() + "' Distância: " + Prova.getDistancia() + "KM [ID=" + Prova.getId() + "]");
         }
+        
+        if(!tempoPrimeiroClassificado.equals("")){
+            return tempoPrimeiroClassificado + " - " + calculaVelMediaDoVencedor(tempoPrimeiroClassificado, Prova.getDistancia()) + " km/h";
+        }else{
+            return "00:00:00 - 0 km/h";
+        }
     }
 
-    public void mostraClassificacaoGeral(Prova Prova) throws ParseException, DocumentException {
+    public String mostraClassificacaoGeral(Prova Prova) throws ParseException, DocumentException {
         ArrayList<Classificacao> classificacaoGeralProva = queries.classificaGeralDaProva(Prova.getId());
         String tempoPrimeiroClassificado = "", gap = "";
 
@@ -250,6 +257,12 @@ public class ResultadosPathAndGeneratorController implements Initializable {
                 tableClassGeral.addCell(Gap);
             }
         }
+        
+        if(!tempoPrimeiroClassificado.equals("")){
+            return tempoPrimeiroClassificado + " - " + calculaVelMediaDoVencedor(tempoPrimeiroClassificado, Prova.getDistancia()) + " km/h";
+        }else{
+            return "00:00:00 - 0 km/h";
+        }
     }
 
     public String calculaGap(String tempoPrimeiroClassificado, String tempo) throws ParseException {
@@ -290,20 +303,18 @@ public class ResultadosPathAndGeneratorController implements Initializable {
 
             System.out.println("Prova: '" + this.prova.get(i).getNome() + "' // Distância: " + this.prova.get(i).getDistancia() + "KM");
             
-            documentoPDF.newPage();
-            documentoPDF.add(new Paragraph(this.prova.get(i).getNome().toUpperCase() + "\n" + converteFormatoData(this.prova.get(i).getDataRealziacao()) + "\nCLASSIFICAÇÃO GERAL\n" + this.prova.get(i).getDistancia() + "KM\n\n"));
+            documentoPDF.newPage();         
             inicializaTabela();
-
-            mostraClassificacaoGeral(this.prova.get(i));
-
+            String mediaVencedorGeral = mostraClassificacaoGeral(this.prova.get(i));
+            documentoPDF.add(new Paragraph(this.prova.get(i).getNome().toUpperCase() + "\n" + converteFormatoData(this.prova.get(i).getDataRealziacao()) + "\nCLASSIFICAÇÃO GERAL\n" + this.prova.get(i).getDistancia() + "KM, winner: " + mediaVencedorGeral + "\n\n"));
             documentoPDF.add(tableClassGeral);
 
             ArrayList<Escalao> EscaloesDaProva = queries.getEscaloesDaProva(this.prova.get(i).getId());
             for (int j = 0; j < EscaloesDaProva.size(); j++) {
-                documentoPDF.newPage();
-                documentoPDF.add(new Paragraph(this.prova.get(i).getNome().toUpperCase() + "\n" + converteFormatoData(this.prova.get(i).getDataRealziacao()) + "\n" + EscaloesDaProva.get(j).getNome() + " " + EscaloesDaProva.get(j).getCategoria() + "\n" + this.prova.get(i).getDistancia() + "KM\n\n"));
+                documentoPDF.newPage();  
                 inicializaTabela();
-                mostraClassificacaoPorEscaloes(this.prova.get(i), EscaloesDaProva.get(j));
+                String mediaVencedorEscalao = mostraClassificacaoPorEscaloes(this.prova.get(i), EscaloesDaProva.get(j));
+                documentoPDF.add(new Paragraph(this.prova.get(i).getNome().toUpperCase() + "\n" + converteFormatoData(this.prova.get(i).getDataRealziacao()) + "\n" + EscaloesDaProva.get(j).getNome() + " " + EscaloesDaProva.get(j).getCategoria() + "\n" + this.prova.get(i).getDistancia() + "KM, winner: " + mediaVencedorEscalao + "\n\n"));
                 documentoPDF.add(tableClassGeral);
             }
         }
@@ -348,5 +359,15 @@ public class ResultadosPathAndGeneratorController implements Initializable {
         String newDateString = sdf.format(d);
         
         return newDateString;   
+    }
+    
+    public String calculaVelMediaDoVencedor(String tempoVencedor, String distancia) throws ParseException{
+        double distKM = Double.parseDouble(distancia);
+        DateFormat formatter = new SimpleDateFormat("hh:mm:ss");
+        Date tempoVencedorDate = (Date)formatter.parse(tempoVencedor);
+        long tempoVencedorSecs = tempoVencedorDate.getTime()/1000;
+
+        double vMediaVencedor = ((distKM*1000)/tempoVencedorSecs)*3.6;
+        return String.valueOf(vMediaVencedor);
     }
 }
