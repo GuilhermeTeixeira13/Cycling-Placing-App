@@ -37,8 +37,6 @@ import javafx.scene.layout.BorderPane;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 
-
-
 public class ResultadosPathAndGeneratorController implements Initializable {
 
     @FXML
@@ -46,14 +44,14 @@ public class ResultadosPathAndGeneratorController implements Initializable {
 
     @FXML
     ImageView minimizeLogo;
-    
+
     @FXML
     TextField txtFieldPath;
-    
+
     PdfPTable tableClassGeral;
-    
+
     Document documentoPDF;
-     
+
     private Stage stage;
     private Scene scene;
     private Parent root;
@@ -71,14 +69,14 @@ public class ResultadosPathAndGeneratorController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        txtFieldPath.setEditable(false);    
+        txtFieldPath.setEditable(false);
     }
-    
-    public void inicializaTabelaClassgeral(){
+
+    public void inicializaTabela() {
         float[] columnWidths = {50, 75, 200, 200, 75, 75};
         tableClassGeral = new PdfPTable(columnWidths);
         tableClassGeral.setWidthPercentage(100);
-        
+
         PdfPCell pos = new PdfPCell(new Phrase("Pos"));
         pos.setBorder(Rectangle.BOTTOM);
         pos.setBackgroundColor(Color.decode("#DFDFDF"));
@@ -94,21 +92,21 @@ public class ResultadosPathAndGeneratorController implements Initializable {
         dorsal.setHorizontalAlignment(Element.ALIGN_CENTER);
         dorsal.setPadding(5);
         tableClassGeral.addCell(dorsal);
-        
+
         PdfPCell nome = new PdfPCell(new Phrase("Nome"));
         nome.setBorder(Rectangle.BOTTOM);
         nome.setBackgroundColor(Color.decode("#DFDFDF"));
         nome.setBorderWidthBottom(2);
         nome.setPadding(5);
         tableClassGeral.addCell(nome);
-        
+
         PdfPCell team = new PdfPCell(new Phrase("Team"));
         team.setBorder(Rectangle.BOTTOM);
         team.setBackgroundColor(Color.decode("#DFDFDF"));
         team.setBorderWidthBottom(2);
         team.setPadding(5);
         tableClassGeral.addCell(team);
-        
+
         PdfPCell tempo = new PdfPCell(new Phrase("Tempo"));
         tempo.setBorder(Rectangle.BOTTOM);
         tempo.setBackgroundColor(Color.decode("#DFDFDF"));
@@ -116,7 +114,7 @@ public class ResultadosPathAndGeneratorController implements Initializable {
         tempo.setHorizontalAlignment(Element.ALIGN_CENTER);
         tempo.setPadding(5);
         tableClassGeral.addCell(tempo);
-        
+
         PdfPCell gap = new PdfPCell(new Phrase("Gap"));
         gap.setBorder(Rectangle.BOTTOM);
         gap.setBackgroundColor(Color.decode("#DFDFDF"));
@@ -128,37 +126,76 @@ public class ResultadosPathAndGeneratorController implements Initializable {
 
     @FXML
     public void DownloadButton(ActionEvent event) throws IOException, Exception {
-        if(txtFieldPath.getText().equals("")){
+        if (txtFieldPath.getText().equals("")) {
             System.out.println("Especifique uma diretoria para guardar os resultados.");
-        }
-        else{
+        } else {
             String pathCompleto = txtFieldPath.getText() + "\\ClassificaçãoGeral.pdf";
-            
-            documentoPDF = new Document(); 
-            
-            try{
+
+            documentoPDF = new Document();
+
+            try {
                 PdfWriter.getInstance(documentoPDF, new FileOutputStream(pathCompleto));
-                
+
                 documentoPDF.open();
-                
+
                 mostraClassificacoes();
-                    
-            }catch(DocumentException de){
+
+            } catch (DocumentException de) {
                 de.printStackTrace();
-            }catch(IOException ioe){
+            } catch (IOException ioe) {
                 ioe.printStackTrace();
-            }finally{
+            } finally {
                 documentoPDF.close();
-            }       
+            }
         }
     }
-    
-    public void mostraClassificacaoPorEscaloes(Prova Prova, Escalao Escalao) {
+
+    public void mostraClassificacaoPorEscaloes(Prova Prova, Escalao Escalao) throws ParseException {
         ArrayList<Classificacao> classificacoesDoEscalao = queries.classificaPorEscalao(Prova.getId(), Escalao.getID());
+        String tempoPrimeiroClassificado = "", gap = "";
+        
         if (classificacoesDoEscalao.isEmpty() == false) {
             System.out.println("-------------------------------\nEscalão: " + Escalao.getNome() + " // " + Escalao.getCategoria());
             for (int k = 0; k < classificacoesDoEscalao.size(); k++) {
                 System.out.println(k + 1 + "ª -> " + classificacoesDoEscalao.get(k).getNomeCiclista() + " // " + classificacoesDoEscalao.get(k).getTempoProva());
+
+                int lugar = k + 1;
+
+                PdfPCell pos = new PdfPCell(new Phrase(String.valueOf(lugar) + "º"));
+                pos.setHorizontalAlignment(Element.ALIGN_CENTER);
+                pos.setBorder(Rectangle.BOTTOM);
+                tableClassGeral.addCell(pos);
+
+                PdfPCell dorsal = new PdfPCell(new Phrase(classificacoesDoEscalao.get(k).getDorsal()));
+                dorsal.setHorizontalAlignment(Element.ALIGN_CENTER);
+                dorsal.setBorder(Rectangle.BOTTOM);
+                tableClassGeral.addCell(dorsal);
+
+                PdfPCell nome = new PdfPCell(new Phrase(classificacoesDoEscalao.get(k).getNomeCiclista()));
+                nome.setBorder(Rectangle.BOTTOM);
+                tableClassGeral.addCell(nome);
+
+                PdfPCell team = new PdfPCell(new Phrase(""));
+                team.setBorder(Rectangle.BOTTOM);
+                tableClassGeral.addCell(team);
+
+                PdfPCell tempo = new PdfPCell(new Phrase(classificacoesDoEscalao.get(k).getTempoProva()));
+                tempo.setBorder(Rectangle.BOTTOM);
+                tempo.setHorizontalAlignment(Element.ALIGN_CENTER);
+                tableClassGeral.addCell(tempo);
+
+                if (k == 0) {
+                    tempoPrimeiroClassificado = classificacoesDoEscalao.get(k).getTempoProva();
+                    PdfPCell GapVazio = new PdfPCell(new Phrase(""));
+                    GapVazio.setBorder(Rectangle.BOTTOM);
+                    tableClassGeral.addCell(GapVazio);
+                } else {
+                    gap = calculaGap(tempoPrimeiroClassificado, classificacoesDoEscalao.get(k).getTempoProva());
+                    PdfPCell Gap = new PdfPCell(new Phrase("+" + gap));
+                    Gap.setBorder(Rectangle.BOTTOM);
+                    Gap.setHorizontalAlignment(Element.ALIGN_CENTER);
+                    tableClassGeral.addCell(Gap);
+                }
             }
             System.out.println("-------------------------------");
         } else {
@@ -168,79 +205,84 @@ public class ResultadosPathAndGeneratorController implements Initializable {
 
     public void mostraClassificacaoGeral(Prova Prova) throws ParseException, DocumentException {
         ArrayList<Classificacao> classificacaoGeralProva = queries.classificaGeralDaProva(Prova.getId());
-        String tempoPrimeiroClassificado="", gap="";
+        String tempoPrimeiroClassificado = "", gap = "";
 
         System.out.println("-------------------------------\n" + "Classificação GERAL:");
-        
+
         for (int k = 0; k < classificacaoGeralProva.size(); k++) {
             System.out.println(k + 1 + "ª -> " + classificacaoGeralProva.get(k).getNomeCiclista() + " // " + classificacaoGeralProva.get(k).getTempoProva());
-            
+
             int lugar = k + 1;
-            
-            PdfPCell pos = new PdfPCell(new Phrase(String.valueOf(lugar)+"º"));
+
+            PdfPCell pos = new PdfPCell(new Phrase(String.valueOf(lugar) + "º"));
             pos.setHorizontalAlignment(Element.ALIGN_CENTER);
             pos.setBorder(Rectangle.BOTTOM);
             tableClassGeral.addCell(pos);
-            
+
             PdfPCell dorsal = new PdfPCell(new Phrase(classificacaoGeralProva.get(k).getDorsal()));
             dorsal.setHorizontalAlignment(Element.ALIGN_CENTER);
             dorsal.setBorder(Rectangle.BOTTOM);
             tableClassGeral.addCell(dorsal);
-            
+
             PdfPCell nome = new PdfPCell(new Phrase(classificacaoGeralProva.get(k).getNomeCiclista()));
             nome.setBorder(Rectangle.BOTTOM);
             tableClassGeral.addCell(nome);
-            
+
             PdfPCell team = new PdfPCell(new Phrase(""));
             team.setBorder(Rectangle.BOTTOM);
             tableClassGeral.addCell(team);
-            
+
             PdfPCell tempo = new PdfPCell(new Phrase(classificacaoGeralProva.get(k).getTempoProva()));
             tempo.setBorder(Rectangle.BOTTOM);
             tempo.setHorizontalAlignment(Element.ALIGN_CENTER);
             tableClassGeral.addCell(tempo);
-            
-            if(k==0){
+
+            if (k == 0) {
                 tempoPrimeiroClassificado = classificacaoGeralProva.get(k).getTempoProva();
                 PdfPCell GapVazio = new PdfPCell(new Phrase(""));
                 GapVazio.setBorder(Rectangle.BOTTOM);
                 tableClassGeral.addCell(GapVazio);
-            }
-            else{
+            } else {
                 gap = calculaGap(tempoPrimeiroClassificado, classificacaoGeralProva.get(k).getTempoProva());
-                PdfPCell Gap = new PdfPCell(new Phrase("+"+gap));
+                PdfPCell Gap = new PdfPCell(new Phrase("+" + gap));
                 Gap.setBorder(Rectangle.BOTTOM);
                 Gap.setHorizontalAlignment(Element.ALIGN_CENTER);
                 tableClassGeral.addCell(Gap);
             }
         }
     }
-    
-    public String calculaGap(String tempoPrimeiroClassificado, String tempo) throws ParseException{
+
+    public String calculaGap(String tempoPrimeiroClassificado, String tempo) throws ParseException {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm:ss");
-  
+
         Date date1 = simpleDateFormat.parse(tempoPrimeiroClassificado);
         Date date2 = simpleDateFormat.parse(tempo);
-  
+
         long differenceInMilliSeconds = Math.abs(date2.getTime() - date1.getTime());
-  
+
         long differenceInHours = (differenceInMilliSeconds / (60 * 60 * 1000)) % 24;
-  
+
         long differenceInMinutes = (differenceInMilliSeconds / (60 * 1000)) % 60;
-  
+
         long differenceInSeconds = (differenceInMilliSeconds / 1000) % 60;
-        
+
         String Hours = String.valueOf(differenceInHours);
-        if(differenceInHours < 10)Hours = "0" + differenceInHours;
-        
+        if (differenceInHours < 10) {
+            Hours = "0" + differenceInHours;
+        }
+
         String Minutes = String.valueOf(differenceInMinutes);
-        if(differenceInMinutes < 10)Minutes = "0" + differenceInMinutes;
-        
+        if (differenceInMinutes < 10) {
+            Minutes = "0" + differenceInMinutes;
+        }
+
         String Seconds = String.valueOf(differenceInSeconds);
-        if(differenceInSeconds < 10)Seconds = "0" + differenceInSeconds;
-        
-        return Hours + ":"+ Minutes + ":"+ Seconds;
-    } 
+        if (differenceInSeconds < 10) {
+            Seconds = "0" + differenceInSeconds;
+        }
+
+        return Hours + ":" + Minutes + ":" + Seconds;
+    }
 
     public void mostraClassificacoes() throws ParseException, DocumentException {
         for (int i = 0; i < this.prova.size(); i++) {
@@ -249,16 +291,20 @@ public class ResultadosPathAndGeneratorController implements Initializable {
             System.out.println("Prova: '" + this.prova.get(i).getNome() + "' // Distância: " + this.prova.get(i).getDistancia() + "KM");
             
             documentoPDF.newPage();
-            documentoPDF.add(new Paragraph(this.prova.get(i).getNome().toUpperCase() + "\n" + this.prova.get(i).getDataRealziacao() + "\nCLASSIFICAÇÃO GERAL\n" + this.prova.get(i).getDistancia() + "KM\n\n"));
-            inicializaTabelaClassgeral();
-            
+            documentoPDF.add(new Paragraph(this.prova.get(i).getNome().toUpperCase() + "\n" + converteFormatoData(this.prova.get(i).getDataRealziacao()) + "\nCLASSIFICAÇÃO GERAL\n" + this.prova.get(i).getDistancia() + "KM\n\n"));
+            inicializaTabela();
+
             mostraClassificacaoGeral(this.prova.get(i));
-            
+
             documentoPDF.add(tableClassGeral);
 
             ArrayList<Escalao> EscaloesDaProva = queries.getEscaloesDaProva(this.prova.get(i).getId());
             for (int j = 0; j < EscaloesDaProva.size(); j++) {
+                documentoPDF.newPage();
+                documentoPDF.add(new Paragraph(this.prova.get(i).getNome().toUpperCase() + "\n" + converteFormatoData(this.prova.get(i).getDataRealziacao()) + "\n" + EscaloesDaProva.get(j).getNome() + " " + EscaloesDaProva.get(j).getCategoria() + "\n" + this.prova.get(i).getDistancia() + "KM\n\n"));
+                inicializaTabela();
                 mostraClassificacaoPorEscaloes(this.prova.get(i), EscaloesDaProva.get(j));
+                documentoPDF.add(tableClassGeral);
             }
         }
     }
@@ -266,12 +312,12 @@ public class ResultadosPathAndGeneratorController implements Initializable {
     @FXML
     public void BrowseButton(ActionEvent event) throws IOException {
         final DirectoryChooser dirchooser = new DirectoryChooser();
-        
+
         Stage stage = (Stage) sceneBorderPane.getScene().getWindow();
-        
+
         File file = dirchooser.showDialog(stage);
-        
-        if(file != null){
+
+        if (file != null) {
             txtFieldPath.setText(file.getAbsolutePath());
         }
     }
@@ -293,5 +339,14 @@ public class ResultadosPathAndGeneratorController implements Initializable {
     public void minimizeClicked(MouseEvent event) {
         Stage stage = (Stage) minimizeLogo.getScene().getWindow();
         stage.setIconified(true);
+    }
+    
+    public String converteFormatoData(String yyyymmdd) throws ParseException{
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        Date d = sdf.parse(yyyymmdd);
+        sdf.applyPattern("EEE, d MMM yyyy");
+        String newDateString = sdf.format(d);
+        
+        return newDateString;   
     }
 }
