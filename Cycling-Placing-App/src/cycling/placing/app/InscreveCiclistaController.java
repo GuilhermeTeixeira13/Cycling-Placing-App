@@ -108,7 +108,7 @@ public class InscreveCiclistaController implements Initializable {
                 int idade = calculaIdadeNoDiaDaProva(dataNascimento, dataProva);
         
                 if(dataNascimento != null && categoria != null && dist != null){
-                    escalaoInscrito = queries.descobreEscalaoPelaIdade(prova.get(0).getId(), String.valueOf(idade), categoria);
+                    escalaoInscrito = queries.descobreEscalaoPelaIdade(prova.get(provaComDist(prova, dist)).getId(), String.valueOf(idade), categoria);
                     if(escalaoInscrito.getNome().equals("")){
                         labelEscalao.setText("Escalão: Não definido.");
                     }else{
@@ -127,7 +127,7 @@ public class InscreveCiclistaController implements Initializable {
                 int idade = calculaIdadeNoDiaDaProva(dataNascimento, dataProva);
                 
                 if(dataNascimento != null && categoria != null && dist != null){
-                    escalaoInscrito = queries.descobreEscalaoPelaIdade(prova.get(0).getId(), String.valueOf(idade), categoria);
+                    escalaoInscrito = queries.descobreEscalaoPelaIdade(prova.get(provaComDist(prova, dist)).getId(), String.valueOf(idade), categoria);
                     if(escalaoInscrito.getNome().equals("")){
                         labelEscalao.setText("Escalão: Não definido.");
                     }else{
@@ -146,7 +146,7 @@ public class InscreveCiclistaController implements Initializable {
                 int idade = calculaIdadeNoDiaDaProva(dataNascimento, dataProva);
                 
                 if(dataNascimento != null && categoria != null && dist != null){
-                    escalaoInscrito = queries.descobreEscalaoPelaIdade(prova.get(0).getId(), String.valueOf(idade), categoria);
+                    escalaoInscrito = queries.descobreEscalaoPelaIdade(prova.get(provaComDist(prova, dist)).getId(), String.valueOf(idade), categoria);
                     if(escalaoInscrito.getNome().equals("")){
                         labelEscalao.setText("Escalão: Não definido.");
                     }else{
@@ -163,6 +163,15 @@ public class InscreveCiclistaController implements Initializable {
         } else {
             return 0;
         }
+    }
+    
+    public int provaComDist(ArrayList<Prova> p, String dist){  
+        for(int i=0; i< p.size(); i++){
+            if(p.get(i).getDistancia().equals(dist)){
+                return i;
+            }
+        }
+        return 0;
     }
     
     @FXML

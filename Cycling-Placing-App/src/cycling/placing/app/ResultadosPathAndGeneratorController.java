@@ -249,7 +249,7 @@ public class ResultadosPathAndGeneratorController implements Initializable {
                 PdfPCell GapVazio = new PdfPCell(new Phrase(""));
                 GapVazio.setBorder(Rectangle.BOTTOM);
                 tableClassGeral.addCell(GapVazio);
-            } else {
+            } else if (classificacaoGeralProva.size() > 0){
                 gap = calculaGap(tempoPrimeiroClassificado, classificacaoGeralProva.get(k).getTempoProva());
                 PdfPCell Gap = new PdfPCell(new Phrase("+" + gap));
                 Gap.setBorder(Rectangle.BOTTOM);
